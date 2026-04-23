@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_SKU', fields: ['sku'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_SLUG', fields: ['slug'])]
 #[ORM\Index(columns: ['name'])]
-#[ORM\Index(columns: ['category'])]
+#[ORM\Index(columns: ['category_id'])]
 class Product
 {
     #[ORM\Id]
