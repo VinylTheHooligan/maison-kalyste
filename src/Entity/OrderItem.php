@@ -25,6 +25,16 @@ class OrderItem
     #[ORM\Column]
     private ?int $totalPrice = null;
 
+    #[ORM\ManyToOne(inversedBy: 'items')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Order $orderOwner = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $productId = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $productName = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -74,6 +84,42 @@ class OrderItem
     public function setTotalPrice(int $totalPrice): static
     {
         $this->totalPrice = $totalPrice;
+
+        return $this;
+    }
+
+    public function getOrderOwner(): ?Order
+    {
+        return $this->orderOwner;
+    }
+
+    public function setOrderOwner(?Order $orderOwner): static
+    {
+        $this->orderOwner = $orderOwner;
+
+        return $this;
+    }
+
+    public function getProductId(): ?int
+    {
+        return $this->productId;
+    }
+
+    public function setProductId(?int $productId): static
+    {
+        $this->productId = $productId;
+
+        return $this;
+    }
+
+    public function getProductName(): ?string
+    {
+        return $this->productName;
+    }
+
+    public function setProductName(string $productName): static
+    {
+        $this->productName = $productName;
 
         return $this;
     }

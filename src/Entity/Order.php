@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use App\Enum\OrderStatus;
 use App\Repository\OrderRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_ORDER_NUMBER', fields: ['orderNumber'])]
 #[ORM\Table(name: '`order`')]
 class Order
 {
@@ -38,6 +41,30 @@ class Order
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'orders')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
+    /**
+     * @var Collection<int, OrderItem>
+     */
+    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'orderOwner', orphanRemoval: true)]
+    private Collection $items;
+
+    #[ORM\OneToOne(inversedBy: 'orderOwner', cascade: ['persist', 'remove'])]
+    private ?Payment $payment = null;
+
+    #[ORM\Column]
+    private array $shippingAddressSnapshot = [];
+
+    #[ORM\Column]
+    private array $billingAddressSnapshot = [];
+
+    public function __construct()
+    {
+        $this->items = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -136,6 +163,84 @@ class Order
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OrderItem>
+     */
+    public function getItems(): Collection
+    {
+        return $this->items;
+    }
+
+    public function addItem(OrderItem $item): static
+    {
+        if (!$this->items->contains($item)) {
+            $this->items->add($item);
+            $item->setOrderOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeItem(OrderItem $item): static
+    {
+        if ($this->items->removeElement($item)) {
+            // set the owning side to null (unless already changed)
+            if ($item->getOrderOwner() === $this) {
+                $item->setOrderOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPayment(): ?Payment
+    {
+        return $this->payment;
+    }
+
+    public function setPayment(?Payment $payment): static
+    {
+        $this->payment = $payment;
+
+        return $this;
+    }
+
+    public function getShippingAddressSnapshot(): array
+    {
+        return $this->shippingAddressSnapshot;
+    }
+
+    public function setShippingAddressSnapshot(array $shippingAddressSnapshot): static
+    {
+        $this->shippingAddressSnapshot = $shippingAddressSnapshot;
+
+        return $this;
+    }
+
+    public function getBillingAddressSnapshot(): array
+    {
+        return $this->billingAddressSnapshot;
+    }
+
+    public function setBillingAddressSnapshot(array $billingAddressSnapshot): static
+    {
+        $this->billingAddressSnapshot = $billingAddressSnapshot;
 
         return $this;
     }

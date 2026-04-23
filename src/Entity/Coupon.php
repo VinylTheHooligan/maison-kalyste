@@ -6,6 +6,7 @@ use App\Repository\CouponRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CouponRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_CODE', fields: ['code'])]
 class Coupon
 {
     #[ORM\Id]

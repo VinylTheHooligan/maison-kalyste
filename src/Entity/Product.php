@@ -3,10 +3,16 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_SKU', fields: ['sku'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_SLUG', fields: ['slug'])]
+#[ORM\Index(columns: ['name'])]
+#[ORM\Index(columns: ['category'])]
 class Product
 {
     #[ORM\Id]
@@ -46,6 +52,28 @@ class Product
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'products')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
+
+    /**
+     * @var Collection<int, ProductImage>
+     */
+    #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'product')]
+    private Collection $images;
+
+    /**
+     * @var Collection<int, InventoryMovement>
+     */
+    #[ORM\OneToMany(targetEntity: InventoryMovement::class, mappedBy: 'product')]
+    private Collection $inventoryMovements;
+
+    public function __construct()
+    {
+        $this->images = new ArrayCollection();
+        $this->inventoryMovements = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -180,6 +208,78 @@ class Product
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProductImage>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(ProductImage $image): static
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(ProductImage $image): static
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getProduct() === $this) {
+                $image->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, InventoryMovement>
+     */
+    public function getInventoryMovements(): Collection
+    {
+        return $this->inventoryMovements;
+    }
+
+    public function addInventoryMovement(InventoryMovement $inventoryMovement): static
+    {
+        if (!$this->inventoryMovements->contains($inventoryMovement)) {
+            $this->inventoryMovements->add($inventoryMovement);
+            $inventoryMovement->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInventoryMovement(InventoryMovement $inventoryMovement): static
+    {
+        if ($this->inventoryMovements->removeElement($inventoryMovement)) {
+            // set the owning side to null (unless already changed)
+            if ($inventoryMovement->getProduct() === $this) {
+                $inventoryMovement->setProduct(null);
+            }
+        }
 
         return $this;
     }

@@ -37,6 +37,9 @@ class Payment
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\OneToOne(mappedBy: 'payment', cascade: ['persist', 'remove'])]
+    private ?Order $orderOwner = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -134,6 +137,28 @@ class Payment
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getOrderOwner(): ?Order
+    {
+        return $this->orderOwner;
+    }
+
+    public function setOrderOwner(?Order $orderOwner): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($orderOwner === null && $this->orderOwner !== null) {
+            $this->orderOwner->setPayment(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($orderOwner !== null && $orderOwner->getPayment() !== $this) {
+            $orderOwner->setPayment($this);
+        }
+
+        $this->orderOwner = $orderOwner;
 
         return $this;
     }
