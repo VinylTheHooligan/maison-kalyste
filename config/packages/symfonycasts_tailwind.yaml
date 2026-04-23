@@ -1,0 +1,3 @@
+symfonycasts_tailwind:
+    binary_version: 'v4.2.2'
+    binary: '%kernel.project_dir%/bin/tailwindcss.exe'
