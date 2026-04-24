@@ -1,5 +1,65 @@
+/* NE PAS OUBLIER DE FAIRE php bin/console tailwind:build --watch */
 @import "tailwindcss";
 
+@font-face {
+    font-family: "PlayfairDisplay";
+    src:url("/font/PlayfairDisplay.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Mulish";
+    src:url("/font/Mulish.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    margin: 0px;
+    padding: 0px;
+
+    --main-color: #CA8153;
+    --secondary-color: #EDE8D0;
+
+    --input-bg-color: #EAE8E0;
+    --input-focus-color: #e7e5e0;   
+}
+
+header {
+    background-color: var(--secondary-color);
+}
+
 body {
-    background-color: skyblue;
+    font-family: "Mulish", sans-serif;
+    font-size: large;
+    color: var(--main-color);
+}
+
+footer {
+    background-color: var(--secondary-color);
+    padding-bottom: 2em;
+}
+
+h1 {
+    font-family: "PlayfairDisplay", sans-serif;
+    font-size: xx-large;
+    font-weight: 600;
+}
+
+h2 {
+    font-family: "Mulish", sans-serif;
+    font-size: xx-large;
+    font-weight: 600;
+}
+
+/* Inputs */
+
+input, input:-internal-autofill-selected {
+    background-color: var(--input-bg-color) !important;
+}
+
+input:focus, input:-internal-autofill-selected:focus {
+    outline: none;
+    background-color: var(--input-focus-color) !important;
 }
