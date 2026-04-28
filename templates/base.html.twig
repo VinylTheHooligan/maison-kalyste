@@ -4,11 +4,14 @@
         <meta charset="UTF-8">
         <title>{% block title %}Maison Kalyste{% endblock %}</title>
         <link rel="icon" type="image/jpg" href="{{ asset('image/maison_kalyste_m.png') }}" /> {# Faire un vrai favicon en png #}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
+
         {% block stylesheets %}
         {% endblock %}
 
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
+            <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
         {% endblock %}
 
         {% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}

@@ -1,6 +1,4 @@
 /* NE PAS OUBLIER DE FAIRE php bin/console tailwind:build --watch */
-@import "tailwindcss";
-
 @font-face {
     font-family: "PlayfairDisplay";
     src:url("/font/PlayfairDisplay.ttf") format("truetype");
@@ -15,25 +13,48 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: "Allura";
+    src:url("/font/AlluraRegular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@import "tailwindcss";
+
+@theme {
+    --font-allura: "Allura", sans-serif;
+}
+
 :root {
     margin: 0px;
     padding: 0px;
 
-    --main-color: #CA8153;
-    --secondary-color: #EDE8D0;
+    --main-color: black;
+    --secondary-color: #CA8153;
+
+    --special-field: #A5A33D;
+
+    --bg-color: #a2a18378;
 
     --input-bg-color: #EAE8E0;
-    --input-focus-color: #e7e5e0;   
+    --input-focus-color: #e7e5e0;
 }
+
+header img {
+    overflow: visible !important;
+}
+
 
 header {
     background-color: var(--secondary-color);
 }
 
 body {
-    font-family: "Mulish", sans-serif;
+    font-family: "PlayfairDisplay", sans-serif;
     font-size: large;
     color: var(--main-color);
+    background-color: var(--bg-color);    
 }
 
 footer {
@@ -48,9 +69,15 @@ h1 {
 }
 
 h2 {
-    font-family: "Mulish", sans-serif;
-    font-size: xx-large;
+    font-family: "Allura", sans-serif;
+    font-size: 3em;
     font-weight: 600;
+}
+
+/* Swiper */
+
+.swiper-button {
+    color: var(--main-color);
 }
 
 /* Inputs */

@@ -3,5 +3,27 @@
 {% block title %}{{ parent() }} - Mode intemporelle{% endblock %}
 
 {% block body %}
+    <div data-controller="carousel"
+     data-carousel-autoplay-value="true"
+     data-carousel-loop-value="true"
+     class="swiper">
 
+        <div class="swiper-wrapper">
+            {% for slide in slides %}
+                <div class="swiper-slide relative">
+                    <img src="{{ asset(slide.image) }}" alt="" class="w-[1900px] h-[400px] object-cover">
+
+                    <div class="backdrop-blur-[1px] absolute inset-0 flex flex-col justify-center items-start ps-25 p-10  text-(--main-color) text-shadow-lg">
+                        <h2 class="text-4xl font-bold mb-4">{{ slide.title }}</h2>
+                        <p class="text-lg max-w-xl">{{ slide.description }}</p>
+                        <a class="" href="">{{ slide.cta }}</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="swiper-button-prev swiper-button"></div>
+        <div class="swiper-button-next swiper-button"></div>
+    </div>
+    <img class="top-5 w-full object-cover" src="{{ asset("/image/baner_eco.png") }}" alt="">
 {% endblock %}
