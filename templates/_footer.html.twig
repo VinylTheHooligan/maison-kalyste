@@ -1,8 +1,8 @@
 <footer class="flex flex-col">
     <form action="{{ path('app_newsletter_subscribe') }}" method="POST">
         <div class="mb-10"> {# newsletter #}
-            <h2 class="text-center mb-1">Recevez notre newsletter</h2>
-            <p class="text-center mb-4">Nos nouveautés et surprises en avant-première en vous inscrivant.</p>
+            <h2 class="text-center font-allura font-black text-6xl mb-2 mt-4">Recevez notre newsletter</h2>
+            <p class="text-center mb-4">Nos nouveautés et surprises en avant-première en vous abonnant.</p>
             <div class="flex flex-row justify-center">
                 <div class="w-1/3">
                     <input class="text-lg px-6 py-3 border-2 w-full" placeholder="Votre e-mail" name="email" type="email" required>
@@ -11,10 +11,41 @@
                     <button class="font-bold text-shadow-2xs px-5 text-center w-full h-full cursor-pointer" type="submit">S'ABONNER</button>
                 </div>
             </div>
+            <p class="text-center text-xs">En vous abonnant, vous acceptez notre <b><a href="{{ path("app_informations_privacy") }}">politique de confidentialité</a></b>.</span>
         </div>
     </form>
-    <div>
+    <div class="grid grid-cols-4 grid-rows-1 gap-5">
+        <div>
 
+        </div>
+        <div>
+            <h3>Contactez-nous</h3>
+            <ul>
+                <li><a href="{{ path("app_informations_contact") }}">Nous écrire</a></li>
+                <li><a href="">01.23.45.67.89</a></li>
+            </ul>
+            <p>Du lundi au vendredi : 9h-19h</p>
+        </div>
+        <div>
+            <h3>Suivez-nous sur les réseaux</h3>
+            <ul>
+                <li><a href="">Facebook</a></li>
+                <li><a href="">Instagram</a></li>
+                <li><a href="">Twitter</a></li>
+                <li><a href="">Tiktok</a></li>
+            </ul>
+        </div>
+        <div>
+            <h3>Informations</h3>
+            <ul>
+                <li><a href="{{ path("app_informations_legal") }}">Mentions Légales</a></li>
+                <li><a href="{{ path("app_informations_cgu") }}">CGU</a></li>
+                <li><a href="{{ path("app_informations_cgv") }}">CGV</a></li>
+                <li><a href="{{ path("app_informations_privacy") }}">Confidentialité</a></li>
+                <li><a href="{{ path("app_informations_returns") }}">Retours & Échanges</a></li>
+                <li><a href="{{ path("app_informations_delivery") }}">Livraison</a></li>
+            </ul>
+        </div>
     </div>
     <hr>
     <div class="flex justify-center">

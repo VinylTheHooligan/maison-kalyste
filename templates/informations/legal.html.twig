@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - Mentions Légales{% endblock %}
+
+{% block body %}
+<div class="flex justify-center">
+    <div class=" flex flex-col gap-20 w-220 bg-(--third-color) my-6 p-6 px-10 pb-30">
+        <h2 class="text-center text-3xl font-black mb-10">Mentions légales</h2>
+
+        <div>
+            <h3 class="h3-legal">1. Éditeur du site</h3>
+            <hr>
+            <p>
+                <b>Maison Vintage SAS</b><br>
+                Société par Actions Simplifiée au capital de 10 000 €<br>
+                Siège social : 25 Rue de la Mode Rétro, 75003 Paris, France<br>
+                Immatriculée au RCS de Paris sous le numéro B 123 456 789<br>
+                Numéro de TVA intracommunautaire : FR 12 123456789<br>
+                <b>Directeur de la publication :</b> Jeanne Derval<br>
+                <b>Contact :</b> bonjour@maisonvintage.fr | 01 23 45 67 89<br>
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">2. Hébergement</h3>
+            <hr>
+            <p>
+                Le site est hébergé par <b>VintageHost</b>.<br>
+                Société Anonyme au capital de 50 000 €<br>
+                Siège social : 10 Avenue des Nuages, 69002 Lyon, France.<br>
+                Téléphone : 04 78 00 00 00<br>
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">3. Propriété Intellectuelle</h3>
+            <hr>
+            <p>
+                L'ensemble des éléments figurant sur le site Maison Vintage (textes, images, graphismes, logo, icônes, etc.) est protégé par les dispositions du Code de la Propriété Intellectuelle. Toute reproduction, représentation, modification, publication, adaptation de tout ou partie des éléments du site, quel que soit le moyen ou le procédé utilisé, est interdite, sauf autorisation écrite préalable de Maison Vintage SAS.
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">4. Données Personnelles</h3>
+            <hr>
+            <p>
+                Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification, de portabilité et d'effacement de vos données personnelles. Pour exercer ce droit, veuillez consulter notre Politique de Confidentialité ou nous contacter par email.
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">5. Données Personnelles</h3>
+            <hr>
+            <p>
+                La navigation sur le site Maison Vintage est susceptible de provoquer l'installation de cookie(s) sur l'ordinateur de l'utilisateur. Pour plus d'informations, référez-vous à notre Politique de Confidentialité.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

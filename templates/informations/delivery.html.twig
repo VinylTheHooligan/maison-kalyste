@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - Livraisons{% endblock %}
+
+{% block body %}
+<div class="flex justify-center">
+    <div class=" flex flex-col gap-15 w-220 bg-(--third-color) my-6 p-6 px-10 pb-30">
+        <div>
+            <h2 class="text-center text-3xl font-black mb-10">Modes de Livraison</h2>
+            <hr>
+            <p class="text-center">
+                Nous prenons grand soin de chaque colis. Vos articles vintage sont emballés dans du papier de soie et protégés avec amour avant de quitter notre atelier.
+            </p>
+            <div class="flex flex-col gap-8 mt-20">
+                <div>
+                    <h4 class="h4-delivery">Livraison Standard (Colissimo)</h4>
+                    <hr>
+                    <p>
+                        Livraison à domicile sous 3 à 5 jours ouvrés.<br>
+                        <b>Frais : 5,90 €</b> (Gratuit dès 100€ d'achat)
+                    </p>
+                </div>
+                <div>
+                    <h4 class="h4-delivery">Point Relais (Mondial Relay)</h4>
+                    <hr>
+                    <p>
+                        Livraison en point relais sous 4 à 6 jours ouvrés.<br>
+                        <b>Frais : 3,90 €</b>
+                    </p>
+                </div>
+                <div>
+                    <h4 class="h4-delivery">Livraison Express (Chronopost)</h4>
+                    <hr>
+                    <p>
+                        Livraison le lendemain avant 13h pour toute commande passée avant 11h.<br>
+                        <b>Frais : 12,90 €</b>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h2 class="text-center text-3xl font-black mb-10">Suivi de commande</h2>
+            <hr>
+            <p class="text-center">
+                Dès l'expédition de votre commande, vous recevrez un email contenant un lien de suivi pour savoir exactement quand vos trésors arriveront.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

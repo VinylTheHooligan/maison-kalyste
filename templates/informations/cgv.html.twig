@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - CGV{% endblock %}
+
+{% block body %}
+<div class="flex justify-center">
+    <div class=" flex flex-col gap-20 w-220 bg-(--third-color) my-6 p-6 px-10 pb-30">
+        <h2 class="text-center text-3xl font-black mb-10">Conditions Générales de Vente</h2>
+
+        <div>
+            <h3 class="h3-legal">1. Objet</h3>
+            <hr>
+            <p>
+                Les présentes Conditions Générales de Vente (CGV) régissent les relations contractuelles entre Maison Vintage et son client, les deux parties les acceptant sans réserve.
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">2. Produits</h3>
+            <hr>
+            <p>
+                Les produits proposés sont ceux qui figurent sur le site Maison Vintage, dans la limite des stocks disponibles. Chaque produit est présenté sur le site internet sous forme d'un descriptif reprenant ses principales caractéristiques techniques.
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">3. Tarifs</h3>
+            <hr>
+            <p>
+                Les prix figurant sur les fiches produits sont des prix en Euros (€) toutes taxes comprises (TTC) tenant compte de la TVA applicable au jour de la commande. Maison Vintage se réserve le droit de modifier ses prix à tout moment.
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">4. Commande et Modalités de paiement</h3>
+            <hr>
+            <p>
+                Le client peut passer commande directement sur le site. Le paiement est exigible immédiatement à la commande. Le règlement s'effectue par carte bancaire ou tout autre moyen proposé sur le site.
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">5. Droit de rétractation</h3>
+            <hr>
+            <p>
+                Conformément à l’article L121-20 du Code de la consommation, l’acheteur dispose d’un délai de quatorze jours ouvrables à compter de la livraison de leur commande pour exercer son droit de rétractation et faire retour du produit au vendeur pour échange ou remboursement sans pénalité.
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">6. Livraison</h3>
+            <hr>
+            <p>
+                Les livraisons sont faites à l’adresse indiquée sur le bon de commande. Les délais de livraison ne sont donnés qu’à titre indicatif.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

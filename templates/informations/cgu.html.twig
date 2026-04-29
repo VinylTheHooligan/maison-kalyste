@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - CGU{% endblock %}
+
+{% block body %}
+<div class="flex justify-center">
+    <div class=" flex flex-col gap-20 w-220 bg-(--third-color) my-6 p-6 px-10 pb-30">
+        <h2 class="text-center text-3xl font-black mb-10">Conditions Générales d'Utilisation</h2>
+
+        <div>
+            <h3 class="h3-legal">1. Objet</h3>
+            <hr>
+            <p>
+                Les présentes Conditions Générales d'Utilisation (CGU) ont pour objet de définir les modalités et conditions dans lesquelles Maison Vintage met à disposition de ses utilisateurs le site, et les services disponibles sur le site et d'autre part, la manière par laquelle l'utilisateur accède au site et utilise ses services.
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">2. Accès au site</h3>
+            <hr>
+            <p>
+                Le site est accessible gratuitement en tout lieu à tout utilisateur ayant un accès à Internet. Tous les frais supportés par l'utilisateur pour accéder au service (matériel informatique, logiciels, connexion Internet, etc.) sont à sa charge.
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">3. Propriété Intellectuelle</h3>
+            <hr>
+            <p>
+                Les marques, logos, signes ainsi que tout le contenu du site (textes, images, son...) font l'objet d'une protection par le Code de la propriété intellectuelle et plus particulièrement par le droit d'auteur.
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">4. Responsabilité</h3>
+            <hr>
+            <p>
+                Les sources des informations diffusées sur le site Maison Vintage sont réputées fiables mais le site ne garantit pas qu'il soit exempt de défauts, d'erreurs ou d'omissions.
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">5. Droit applicable et juridiction compétente</h3>
+            <hr>
+            <p>
+                La législation française s'applique au présent contrat. En cas d'absence de résolution amiable d'un litige né entre les parties, les tribunaux français seront seuls compétents pour en connaître.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

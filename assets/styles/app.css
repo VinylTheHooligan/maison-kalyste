@@ -35,9 +35,9 @@
     --secondary-color: #CA8153;
     --third-color: #DEAD8D;
 
-    --special-field: #A5A33D;
+    --bg-color: #8C4D2E;
 
-    --bg-color: #a2a18378;
+    --special-field: #A5A33D;
 
     --input-bg-color: #EAE8E0;
     --input-focus-color: #e7e5e0;
@@ -68,14 +68,13 @@ h1 {
     font-weight: 600;
 }
 
-h2 {
-    font-family: "Allura", sans-serif;
-    font-size: 3em;
-    font-weight: 600;
+.h3-legal {
+    @apply text-2xl font-bold mt-3;
 }
 
-h3 {
-    font-family: "PlayfairDisplay", serif;
+hr {
+    margin-top: 3px;
+    margin-bottom: 1em;
 }
 
 /* Swiper */
@@ -99,3 +98,30 @@ input:focus, input:-internal-autofill-selected:focus {
 .btn-header {
     @apply cursor-pointer relative pb-1 after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:h-[2px] after:w-full after:bg-black after:scale-x-0 after:origin-center after:-translate-x-1/2 after:transition-transform after:duration-300 hover:after:scale-x-100;
 }
+
+/* Form button */
+.form-button {
+    @apply text-center font-bold bg-(--secondary-color) text-(--main-color) w-full py-4 cursor-pointer duration-150;
+}
+
+.form-button:hover {
+    @apply bg-(--main-color) text-(--secondary-color);
+}
+
+.form-input {
+    @apply px-4 py-2 border-2 bg-(--input-bg-color);
+}
+
+.form-input:focus {
+    @apply bg-(--input-focus-color);
+}
+
+.form-checklabel {
+    @apply font-normal text-sm;
+}
+
+.form-label {
+    @apply font-semibold;
+}
+
+.hidden { display:none; }

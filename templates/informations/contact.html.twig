@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - Contactez-nous{% endblock %}
+
+{% block body %}
+<div class="flex flex-col items-center">
+    <div class="text-center flex flex-col w-150 bg-(--third-color) my-6 p-6 px-10">
+        <h2 class="font-bold text-2xl">Nos coordonnées</h2>
+        <hr>       
+        <div class="grid grid-cols-2 grid-rows-2 gap-4">
+            <div>
+                <h3 class="font-bold">Email</h3>
+            </div>
+            <div>
+                <h3 class="font-bold">Téléphone</h3>
+            </div>
+            <div>
+                <p>bonjour@maisonvintage.fr</p>
+            </div>
+            <div>
+                <p>01.23.45.67.89</p>
+            </div>
+        </div>
+    </div>
+
+    {{ form_start(contact_form) }}
+        <div class=" flex flex-col gap-5 w-220 bg-(--third-color) my-6 p-6 px-30 pb-30">
+            <h2 class="text-center text-3xl font-black mb-10">Contactez-Nous</h2>
+
+            <div class="flex flex-col">
+                {{ form_label(contact_form.name, null, {
+                    label_attr: { class: 'form-label' }
+                }) }}
+                {{ form_widget(contact_form.name, {
+                    attr: { class: 'form-input' }
+                }) }}
+                {{ form_errors(contact_form.name) }}
+            </div>
+
+            <div class="flex flex-col">
+                {{ form_label(contact_form.email, null, {
+                    label_attr: { class: 'form-label' }
+                }) }}
+                {{ form_widget(contact_form.email, {
+                    attr: { class: 'form-input' }
+                }) }}
+                {{ form_errors(contact_form.email) }}
+            </div>
+
+            <div class="flex flex-col">
+                {{ form_label(contact_form.topic, null, {
+                    label_attr: { class: 'form-label' }
+                }) }}
+                {{ form_widget(contact_form.topic, {
+                    attr: { class: 'form-input' }
+                }) }}
+                {{ form_errors(contact_form.topic) }}
+            </div>
+
+            <div class="flex flex-col">
+                {{ form_label(contact_form.message, null, {
+                    label_attr: { class: 'form-label' }
+                }) }}
+                {{ form_widget(contact_form.message, {
+                    attr: { class: 'form-input' }
+                }) }}
+                {{ form_errors(contact_form.message) }}
+            </div>
+
+            <div>
+                {{ form_widget(contact_form.privacy, {
+                    attr: { class: 'form-input' }
+                }) }}
+                {{ form_label(contact_form.privacy, null, {
+                    label_attr: { class: 'form-checklabel' }
+                }) }}
+                {{ form_errors(contact_form.privacy) }}
+            </div>
+
+            <div>
+                {{ form_row(contact_form.submit) }}
+            </div>
+
+
+        </div>
+    {{ form_end(contact_form) }}
+</div>
+{% endblock %}

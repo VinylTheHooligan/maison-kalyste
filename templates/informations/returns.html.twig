@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - Retours & Échanges{% endblock %}
+
+{% block body %}
+<div class="flex justify-center">
+    <div class=" flex flex-col gap-20 w-220 bg-(--third-color) my-6 p-6 px-10 pb-30">
+        <div>
+            <h2 class="text-center text-3xl font-black mb-10">Politique de Retours</h2>
+            <p>
+                Chez Maison Vintage, nous voulons que vous soyez tombée amoureuse de votre trouvaille. Si ce n'est pas le coup de foudre, vous disposez de 14 jours après réception pour nous retourner vos articles.<br><br>
+
+                Les articles doivent être retournés dans leur état d'origine, non portés (sauf essayage), non lavés, et avec leurs étiquettes éventuelles.
+            </p>
+        </div>
+        <div>
+            <h3 class="h3-legal">Comment effectuer un retour ?</h3>
+            <hr>
+            <ol>
+                <li>Connectez-vous à votre compte ou contactez notre service client.</li>
+                <li>Imprimez le bon de retour fourni.</li>
+                <li>Emballez soigneusement les articles.</li>
+                <li>Déposez le colis au point relais le plus proche.</li>
+            </ol>
+        </div>
+        <div>
+            <h3 class="h3-legal">Remboursement</h3>
+            <hr>
+            <p>
+                Une fois votre retour reçu et inspecté, nous procéderons au remboursement sur le moyen de paiement utilisé lors de la commande, sous 5 à 10 jours ouvrés.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
