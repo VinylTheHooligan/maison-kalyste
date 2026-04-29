@@ -1,19 +1,57 @@
-<div class="py-2 px-4 bg-black">
-    <span>MAISON KALYSTE : // DESCRIPTION SUPER COURTE //</span>
-</div>
-<header class="z-1000 sticky top-0">
+<header class="z-1000 sticky top-0" data-sidePanel-target="header">
     <div class="flex flex-col">
         <div class="p-3 flex flex-row items-center justify-between">
             <div class="w-full">
-                <img class="w-20" src="{{ asset("/image/maison_kalyste_m.png") }}" alt="Logo de Maison Kalyste">
+                <img class="w-15" src="{{ asset("/image/maison_kalyste_m.png") }}" alt="Logo de Maison Kalyste">
             </div>
             <div class="w-full">
-                <h1 class="text-center">Maison <span class="font-allura text-4xl pl-2">Kalyste</span></h1>
+                <h1 class="font-allura text-center text-5xl"><span class="pe-5">Maison</span>Kalyste</h1>
             </div>
             <div class="w-full flex flex-row justify-end">
-                <a href=""><img src="{{ asset("/image/ui/account.svg") }}" alt=""></a>
-                <a href=""><img src="{{ asset("/image/ui/cart.svg") }}" alt=""></a>
+                <a data-sidePanel-target="accountButton" class="cursor-pointer">
+                    <img class="w-10" src="{{ asset("/image/ui/account.svg") }}" alt="">
+                </a>
+                <a data-cart-target="button" class="cursor-pointer">
+                    <img class="w-10" src="{{ asset("/image/ui/cart.svg") }}" alt="">
+                </a>
             </div>
+        </div>
+        <nav class="flex justify-center gap-6 py-2 bg-(--third-color)" aria-label="Barre de navigation">
+            <a href="" class="btn-header">Collections</a>
+            <a href="" class="btn-header">Nouveautés</a>
+            <a href="" class="btn-header">Best-sellers</a>
+            <a href="" class="btn-header">Vêtements</a>
+            <a href="" class="btn-header">Accessoires</a>
+            <a href="" class="btn-header">Promotions</a>
+        </nav>
         </div>
     </div>
 </header>
+
+<div data-cart-target="overlay"
+     class="fixed inset-0 bg-black/30 opacity-0 pointer-events-none transition-opacity duration-300 z-1500">
+</div>
+<div data-cart-target="panel"
+     class="fixed top-0 right-0 h-full w-120 bg-(--secondary-color) shadow-xl translate-x-full transition-transform duration-300 z-2000">
+    
+    <div class="flex flex-col h-full justify-between">
+        <div class="flex flex-row p-4 justify-between">
+            <h3 class="text-sm font-bold">PANIER</h3>
+            <button class="cursor-pointer" data-cart-target="closeBtn"><img src="{{ asset("/image/ui/closecart.svg") }}" alt=""></button>
+        </div>
+        
+        <!-- Panier vide -->
+        <div data-cart-target="empty" class="text-center py-6 hidden">
+            <p class="mb-10 text-lg">VOTRE PANIER EST VIDE</p>
+            <a href="" class="font-allura font-bold p-4 text-3xl cursor-pointer bg-(--third-color) text-black duration-100 hover:text-(--third-color) hover:bg-black">Découvrir notre collection</a>
+        </div>
+        <!-- Liste -->
+        <ul data-cart-target="list"></ul>
+        <div>
+            <hr class="mx-8 mb-2">
+            <div data-cart-target="payment" class="mt-4 font-bold">
+                Total : <span data-cart-target="total">0 €</span>
+            </div>
+        </div>
+    </div>
+</div>
