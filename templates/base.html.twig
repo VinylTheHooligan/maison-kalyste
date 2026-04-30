@@ -5,7 +5,7 @@
         <title>{% block title %}Maison Kalyste{% endblock %}</title>
         <link rel="icon" type="image/jpg" href="{{ asset('image/maison_kalyste_m.png') }}" /> {# Faire un vrai favicon en png #}
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
-
+        <link href="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.css" rel="stylesheet" />
         {% block stylesheets %}
         {% endblock %}
 
@@ -25,5 +25,6 @@
         {% include "_header.html.twig" %}
         {% block body %}{% endblock %}
         {% include "_footer.html.twig" %}
+        <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
     </body>
 </html>

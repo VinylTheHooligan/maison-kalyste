@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -19,6 +20,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank]
+    #[Assert\Email]
+    #[Assert\Length(max: 180)]
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
@@ -28,21 +32,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
+    #[Assert\NotBlank(groups: ['registration'])]
+    #[Assert\Length(min: 8, groups: ['registration'])]
+    private ?string $plainPassword = null;
+
     /**
      * @var string The hashed password
      */
+    #[Assert\NotBlank]
     #[ORM\Column]
     private ?string $password = null;
 
+    #[Assert\NotBlank]
     #[ORM\Column(length: 100)]
     private ?string $firstName = null;
 
+    #[Assert\NotBlank]
     #[ORM\Column(length: 100)]
     private ?string $lastName = null;
 
-    #[ORM\Column]
-    private ?bool $isVerified = null;
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $isVerified = false;
 
+    #[Assert\NotNull]
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -67,10 +79,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(inversedBy: 'owner', cascade: ['persist', 'remove'])]
     private ?Cart $cart = null;
 
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
+    private ?string $activationToken = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $activationExpiresAt = null;
+
+
     public function __construct()
     {
+        $this->isVerified = false;
         $this->orders = new ArrayCollection();
         $this->addresses = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable("now");
     }
 
     public function getId(): ?int
@@ -294,6 +315,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCart(?Cart $cart): static
     {
         $this->cart = $cart;
+
+        return $this;
+    }
+
+    public function getActivationToken(): ?string
+    {
+        return $this->activationToken;
+    }
+
+    public function setActivationToken(?string $token): self
+    {
+        $this->activationToken = $token;
+        return $this;
+    }
+
+    public function getActivationExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->activationExpiresAt;
+    }
+
+    public function setActivationExpiresAt(?\DateTimeImmutable $activationExpiresAt): static
+    {
+        $this->activationExpiresAt = $activationExpiresAt;
 
         return $this;
     }

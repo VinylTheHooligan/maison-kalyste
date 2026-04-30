@@ -59,7 +59,7 @@ body {
 }
 
 footer {
-    background-color: var(--secondary-color);
+    background-color: var(--third-color);
     padding-bottom: 2em;
 }
 
@@ -70,6 +70,10 @@ h1 {
 
 .h3-legal {
     @apply text-2xl font-bold mt-3;
+}
+
+.h4-delivery {
+    @apply font-bold;
 }
 
 hr {
