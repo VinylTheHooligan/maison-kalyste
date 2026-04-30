@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\DTO\RegistrationDTO;
+use App\DTO\User\RegistrationDTO;
 use App\Entity\User;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -19,6 +19,7 @@ class AssemblerDTOService {
         $user->setEmail($dto->email);
         $user->setFirstName($dto->firstName);
         $user->setLastName($dto->lastName);
+        $user->setRoles(['ROLE_USER']);
 
         $hashed = $this->hasher->hashPassword($user, $dto->plainPassword);
         $user->setPassword($hashed);

@@ -1,49 +1,56 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}{{ parent() }} - Connexion{% endblock %}
 
 {% block body %}
-    <div class="grid grid-cols-2 grid-rows-1 gap-4 my-20">
+    <div class="grid grid-cols-2 grid-rows-1 gap-4 my-10 py-15 bg-(--third-color)">
         <form method="post">
-            {% if error %}
-                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-            {% endif %}
-
-            {% if app.user %}
-                <div class="mb-3">
-                    You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
-                </div>
-            {% endif %}
-
             <div class="flex flex-col items-center">
-                <h2 class="font-bold text-2xl">Connexion</h2>
+                <h2 class="font-bold text-3xl">Connexion</h2>
 
-                <div class="text-sm text-center">
-                    <span>Vous avez déjà un compte :</span>
-                    <div class="flex flex-col items-center my-5 w-fit">
-                        <label for="username">Votre e-mail</label>
-                        <input type="email" value="{{ last_username }}" name="_username" id="username" class="w-80" autocomplete="email" required autofocus>
-                        <label for="password">Votre mot de passe</label>
-                        <input type="password" name="_password" id="password" class="w-80" autocomplete="current-password" required>
-                    </div>
-                    <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
-                    <div class="checkbox mb-3">
-                        <input type="checkbox" name="_remember_me" id="_remember_me">
-                        <label for="_remember_me">Se souvenir de moi</label>
-                    </div>
+                {% if app.user %}
+                <div class="flex flex-col gap-6 my-3 text-sm text-center">
+                    <p>Vous êtes déjà connecté en tant que <b>{{ app.user.userIdentifier }}</b>.</p>
+                    <a class="form-button text-lg" href="{{ logout_path() }}">Se déconnecté ?</a>
                 </div>
+                {% else %}
+                    <div class="text-sm text-center font-semibold">
+                        <span>Vous avez déjà un compte :</span>
+                        <div class="flex flex-col items-center my-5 w-fit gap-2">
+                            <div class="flex flex-col">
+                                <label class="form-label" for="username">Votre e-mail</label>
+                                <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-input w-80" autocomplete="email" required autofocus>
+                            </div>
+                            <div class="flex flex-col">
+                                <label class="form-label" for="password">Votre mot de passe</label>
+                                <input type="password" name="_password" id="password" class="form-input w-80" autocomplete="current-password" required>
+                            </div>
+                        </div>
+                        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+                        <div class="form-checklabel mb-3">
+                            <input type="checkbox" name="_remember_me" id="_remember_me">
+                            <label class="ml-1 font-bold" for="_remember_me">Se souvenir de moi</label>
+                        </div>
+                    </div>
 
-                <div class="w-100">
-                    <button class="form-button" type="submit">Connexion</button>
+                    <div class="w-100">
+                        <button class="form-button" type="submit">Connexion</button>
+                    </div>
+                {% endif %}
+                {% if error %}
+                <div class="mt-2">
+                    <p class="text-sm text-center">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
                 </div>
+                {% endif %}
             </div>
         </form>
         <div class="flex flex-col items-center">
-            <h2 class="font-bold text-2xl">Inscription</h2>
-            <span class="text-sm">Vous n'avez pas de compte :</span>
-            <div class="w-100 mt-5">
-                <a href="{{ path("app_signin") }}" class="form-button">Créer un compte</a>
+            <h2 class="font-bold text-3xl">Inscription</h2>
+            <span class="text-sm font-semibold">Vous n'avez pas de compte :</span>
+            <div class="my-12">
+                <a href="{{ path("app_register") }}" class="form-button px-30">Créer un compte</a>
             </div>
+            <a class="text-sm font-semibold" href="{{ path("app_resend_activation") }}">Lien d'activation non-reçu / expiré ?</a>
         </div>
     </div>
 {% endblock %}

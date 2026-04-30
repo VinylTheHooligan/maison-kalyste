@@ -7,6 +7,9 @@ framework:
 
     #esi: true
     #fragments: true
+    http_method_override: false
+    trusted_proxies: '127.0.0.1'
+    trusted_headers: ['x-forwarded-proto']
 
 when@test:
     framework:

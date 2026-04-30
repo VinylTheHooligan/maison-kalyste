@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
-use App\DTO\RegistrationDTO;
+use App\DTO\User\RegistrationDTO;
+use App\DTO\User\ResendActivationDTO;
 use App\Form\RegistrationFormType;
+use App\Form\ResendActivationFormType;
 use App\Repository\UserRepository;
 use App\Services\ActivationEmailService;
 use App\Services\AssemblerDTOService;
@@ -52,7 +54,11 @@ class SecurityController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid())
         {
+            $dto->plainPassword = $form->get('plainPassword')->getData();
+            $dto->agreeTerms = $form->get('agreeTerms')->getData();
+
             $user = $assembler->fromRegistrationDTO($dto);
+
             $user->setActivationExpiresAt(
                 new \DateTimeImmutable('+24 hours')
             );
@@ -67,8 +73,15 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+        if ($form->isSubmitted() && !$form->isValid()) {
+            return $this->render('security/register.html.twig', [
+                'form' => $form->createView(),
+            ], new Response(status: 422));
+        }
+
+
         return $this->render('security/register.html.twig', [
-            'registrationForm' => $form->createView(),
+            'form' => $form->createView(),
         ]);
     }
 
@@ -98,5 +111,50 @@ class SecurityController extends AbstractController
         $this->addFlash('success', "Votre compte est maintenant activé. Vous pouvez vous connecter.");
 
         return $this->redirectToRoute('app_login');
+    }
+
+    #[Route('/resend-activation', name: 'app_resend_activation')]
+    public function resend(
+        Request $request,
+        UserRepository $userRepository,
+        ActivationEmailService $activationEmailService,
+        EntityManagerInterface $em
+    ): Response
+    {
+        $dto = new ResendActivationDTO();
+
+        $form = $this->createForm(ResendActivationFormType::class, $dto);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $user = $userRepository->findOneBy(['email' => $dto->email]);
+
+            if (!$user)
+            {
+                $this->addFlash('danger', 'Aucun compte trouvé avec cet email.');
+                return $this->redirectToRoute('app_resend_activation');
+            }
+
+            if (!$user->isVerified())
+            {
+                $this->addFlash('info', 'Ce compte est déjà activé.');
+                return $this->redirectToRoute('app_login');
+            }
+
+            $user->setActivationToken(bin2hex(random_bytes(32)));
+            $user->setActivationExpiresAt(new \DateTimeImmutable('+24 hours'));
+
+            $em->flush();
+
+            $activationEmailService->sendActivationEmail($user);
+
+            $this->addFlash('success', "Un nouvel email d'activation vous a été envoyé.");
+            return $this->redirectToRoute('app_login');
+        }
+
+        return $this->render('security/resend.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }

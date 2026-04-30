@@ -26,7 +26,7 @@ class ActivationEmailService {
             ->from('no-reply@maisonkalyste.fr')
             ->to($user->getEmail())
             ->subject($user->getFirstName() . ', activez votre compte ! - Maison Kalyste')
-            ->htmlTemplate('emails/activation.hmtl.twig')
+            ->htmlTemplate('emails/activation.html.twig')
             ->context([
                 'user' => $user,
                 'activationUrl' => $activationUrl,

@@ -98,6 +98,10 @@ input:focus, input:-internal-autofill-selected:focus {
     background-color: var(--input-focus-color) !important;
 }
 
+input[type=checkbox] {
+  @apply border-2 bg-(--input-bg-color);
+}
+
 /* Header Nav */
 .btn-header {
     @apply cursor-pointer relative pb-1 after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:h-[2px] after:w-full after:bg-black after:scale-x-0 after:origin-center after:-translate-x-1/2 after:transition-transform after:duration-300 hover:after:scale-x-100;
