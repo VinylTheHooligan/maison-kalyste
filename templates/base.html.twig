@@ -25,6 +25,17 @@
         {% include "_header.html.twig" %}
         {% block body %}{% endblock %}
         {% include "_footer.html.twig" %}
+
+        <div id="toast-container" class="fixed bottom-5 end-5 flex flex-col gap-3 z-50">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    {% include 'components/flash.html.twig' with {
+                        type: type,
+                        message: message
+                    } %}
+                {% endfor %}
+            {% endfor %}
+        </div>
         <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
     </body>
 </html>

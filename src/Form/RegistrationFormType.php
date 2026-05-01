@@ -12,10 +12,16 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class RegistrationFormType extends AbstractType
 {
+    public function __construct(
+        private RouterInterface $router
+    )
+    {}
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -56,9 +62,19 @@ class RegistrationFormType extends AbstractType
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [
-                    new Assert\IsTrue(message: 'Vous devez accepter les conditions.'),
+                    new Assert\IsTrue(message: 'Vous devez accepter nos politiques de confidentialités, nos CGV et nos CGU.'),
                 ],
-                'label' => 'Acceptez nos politiques.',
+                'label_html' => true,
+                'label' => sprintf(
+                    'J\'accepte les 
+                        <a href="%s" target="_blank" class="font-bold">conditions générales de vente</a>, 
+                        <a href="%s" target="_blank" class="font-bold">conditions générales d\'utilisation</a> 
+                        et la 
+                        <a href="%s" target="_blank" class=class="font-bold">politique de confidentialité</a>.',
+                    $this->router->generate('app_informations_cgv'),
+                    $this->router->generate('app_informations_cgu'),
+                    $this->router->generate('app_informations_privacy')
+                ),
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Inscrivez-vous',

@@ -2,13 +2,19 @@
 
 namespace App\Controller;
 
+use App\DTO\User\ForgotPasswordDTO;
 use App\DTO\User\RegistrationDTO;
 use App\DTO\User\ResendActivationDTO;
+use App\DTO\User\ResetPasswordDTO;
+use App\Entity\User;
+use App\Form\ForgotPasswordFormType;
 use App\Form\RegistrationFormType;
 use App\Form\ResendActivationFormType;
+use App\Form\ResetPasswordFormType;
 use App\Repository\UserRepository;
 use App\Services\ActivationEmailService;
 use App\Services\AssemblerDTOService;
+use App\Services\ResetPasswordEmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,11 +27,13 @@ class SecurityController extends AbstractController
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
-
-        // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
+
+        if ($error)
+        {
+            $this->addFlash('error', $error->getMessageKey());
+        }
 
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
@@ -136,7 +144,7 @@ class SecurityController extends AbstractController
                 return $this->redirectToRoute('app_resend_activation');
             }
 
-            if (!$user->isVerified())
+            if ($user->isVerified())
             {
                 $this->addFlash('info', 'Ce compte est déjà activé.');
                 return $this->redirectToRoute('app_login');
@@ -154,6 +162,81 @@ class SecurityController extends AbstractController
         }
 
         return $this->render('security/resend.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/forgot-password', name: 'app_forgot_password')]
+    public function forgot(
+        Request $request,
+        UserRepository $userRepository,
+        ResetPasswordEmailService $resetPasswordEmailService,
+        EntityManagerInterface $em
+    ): Response
+    {
+        $dto = new ForgotPasswordDTO();
+
+        $form = $this->createForm(ForgotPasswordFormType::class, $dto);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $user = $userRepository->findOneBy(['email' => $dto->email]);
+
+            if ($user)
+            {
+                $user->setResetPasswordToken(bin2hex(random_bytes(32)));
+                $user->setResetPasswordExpiresAt(new \DateTimeImmutable('+1 hour'));
+                $em->flush();
+
+                $resetPasswordEmailService->sendResetEmail($user);
+            }
+
+            $this->addFlash('success', 'Si un compte existe, un email a été envoyé.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        return $this->render('security/forgot_password.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/reset-password/{token}', name: 'app_reset_password')]
+    public function reset(
+        string $token,
+        Request $request,
+        UserRepository $userRepository,
+        AssemblerDTOService $assembler,
+        EntityManagerInterface $em
+    ): Response
+    {
+        $user = $userRepository->findOneBy(['resetPasswordToken' => $token]);
+
+        if (!$user || $user->getResetPasswordExpiresAt() < new \DateTimeImmutable())
+        {
+            $this->addFlash('danger', 'Lien invalide ou expiré.');
+            return $this->redirectToRoute('app_forgot_password');
+        }
+
+        $dto = new ResetPasswordDTO();
+
+        $form = $this->createForm(ResetPasswordFormType::class, $dto);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $assembler->updatePasswordFromDTO($user, $dto);
+
+            $user->setResetPasswordToken(null);
+            $user->setResetPasswordExpiresAt(null);
+
+            $em->flush();
+
+            $this->addFlash('success', 'Votre mot de passe a bien été réinitialisé.');
+            return $this->redirectToRoute('app_home');
+        }
+
+        return $this->render('security/reset_password.html.twig', [
             'form' => $form->createView(),
         ]);
     }

@@ -52,7 +52,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $lastName = null;
 
     #[ORM\Column(options: ['default' => false])]
-    private ?bool $isVerified = false;
+    private bool $isVerified = false;
 
     #[Assert\NotNull]
     #[ORM\Column]
@@ -82,8 +82,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private ?string $activationToken = null;
 
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
+    private ?string $resetPasswordToken = null;
+
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $activationExpiresAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $resetPasswordExpiresAt = null;
 
 
     public function __construct()
@@ -158,6 +164,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(string $plainPassword): static
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
     /**
      * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
      */
@@ -173,6 +191,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // @deprecated, to be removed when upgrading to Symfony 8
+        $this->plainPassword = null;
     }
 
     public function getFirstName(): ?string
@@ -339,6 +358,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->activationExpiresAt = $activationExpiresAt;
 
+        return $this;
+    }
+
+    public function getResetPasswordToken(): ?string
+    {
+        return $this->resetPasswordToken;
+    }
+    
+    public function setResetPasswordToken(?string $token): self
+    {
+        $this->resetPasswordToken = $token;
+        return $this;
+    }
+    
+    public function getResetPasswordExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->resetPasswordExpiresAt;
+    }
+    
+    public function setResetPasswordExpiresAt(?\DateTimeImmutable $expiresAt): self
+    {
+        $this->resetPasswordExpiresAt = $expiresAt;
         return $this;
     }
 }

@@ -10,6 +10,8 @@ framework:
     http_method_override: false
     trusted_proxies: '127.0.0.1'
     trusted_headers: ['x-forwarded-proto']
+    mailer:
+        dsn: '%env(MAILER_DSN)%'
 
 when@test:
     framework:

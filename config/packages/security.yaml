@@ -17,7 +17,6 @@ security:
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
         main:
-            always_authenticate_before_granting: true
             user_checker: App\Security\UserChecker
             lazy: true
             provider: app_user_provider
@@ -27,6 +26,10 @@ security:
                 enable_csrf: true
             remember_me:
                 secret: '%kernel.secret%'
+                lifetime: 604800 # 7 jours
+                path: /
+                always_remember_me: false
+
             login_throttling:
                 max_attempts: 5
                 interval: '1 minute'

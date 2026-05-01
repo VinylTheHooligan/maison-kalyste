@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\DTO\User\RegistrationDTO;
+use App\DTO\User\ResetPasswordDTO;
 use App\Entity\User;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -26,6 +27,16 @@ class AssemblerDTOService {
 
         $user->setIsVerified(false);
         $user->setActivationToken(bin2hex(random_bytes(32)));
+
+        return $user;
+    }
+
+    public function updatePasswordFromDTO(User $user, ResetPasswordDTO $dto): User
+    {
+        $hashedPassword = $this->hasher->hashPassword($user, $dto->plainPassword);
+
+        $user->setPassword($hashedPassword);
+        $user->setUpdatedAt(new \DateTimeImmutable());
 
         return $user;
     }
