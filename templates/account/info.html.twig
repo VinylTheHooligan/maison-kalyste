@@ -1,0 +1,79 @@
+{% extends "account/index.html.twig" %}
+
+{% block title %}{{ parent() }} - Mes informations{% endblock %}
+
+{% block account %}
+    <div class="flex flex-col items-center">
+        <div class="w-200">
+            <div class="flex flex-col gap-4 border-2 border-(--secondary-color) py-6 px-6">
+                {{ form_start(formNameUser) }}
+                    <div class="flex flex-col gap-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex flex-col">
+                                {{ form_label(formNameUser.firstName, null, {
+                                    label_attr: { class: 'form-label' }
+                                }) }}
+                                {{ form_widget(formNameUser.firstName, {
+                                    attr: { class: 'form-input' }
+                                }) }}
+                            </div>
+                            <div class="flex flex-col">
+                                {{ form_label(formNameUser.lastName, null, {
+                                    label_attr: { class: 'form-label' }
+                                }) }}
+                                {{ form_widget(formNameUser.lastName, {
+                                    attr: { class: 'form-input' }
+                                }) }}
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            {{ form_label(formNameUser.username, null, {
+                                label_attr: { class: 'form-label' }
+                            }) }}
+                            {{ form_widget(formNameUser.username, {
+                                attr: { class: 'form-input' }
+                            }) }}
+                        </div>
+                        <div class="flex flex-col">
+                            {{ form_label(formNameUser.submit) }}
+                            {{ form_widget(formNameUser.submit) }}
+                        </div>
+                    </div>
+                {{ form_end(formNameUser) }}
+                <hr>
+                {{ form_start(formPassword)}}
+                    <div class="flex flex-col gap-4">
+                        <div class="flex flex-col">
+                            {{ form_label(formPassword.oldPassword, null, {
+                                label_attr: { class: 'form-label' }
+                            }) }}
+                            {{ form_widget(formPassword.oldPassword, {
+                                attr: { class: 'form-input' }
+                            }) }}
+                        </div>
+                        <div class="flex flex-col">
+                            {{ form_label(formPassword.plainPassword.first, null, {
+                                label_attr: { class: 'form-label' }
+                            }) }}
+                            {{ form_widget(formPassword.plainPassword.first, {
+                                attr: { class: 'form-input' }
+                            }) }}
+                        </div>
+                        <div class="flex flex-col">
+                            {{ form_label(formPassword.plainPassword.second, null, {
+                                label_attr: { class: 'form-label' }
+                            }) }}
+                            {{ form_widget(formPassword.plainPassword.second, {
+                                attr: { class: 'form-input' }
+                            }) }}
+                        </div>
+                        <div class="flex flex-col">
+                            {{ form_label(formPassword.submit) }}
+                            {{ form_widget(formPassword.submit) }}
+                        </div>
+                    </div>
+                {{ form_end(formPassword )}}
+            </div>
+        </div>
+    </div>
+{% endblock %}

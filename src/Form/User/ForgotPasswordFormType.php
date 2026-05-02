@@ -1,24 +1,26 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\User;
 
-use App\DTO\User\ResendActivationDTO;
+use App\DTO\User\EmailDTO;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ResendActivationFormType extends AbstractType
+class ForgotPasswordFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('email', EmailType::class);
+        $builder->add('email', EmailType::class, [
+            'label' => 'Votre e-mail'
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => ResendActivationDTO::class,
+            'data_class' => EmailDTO::class,
         ]);
     }
 }

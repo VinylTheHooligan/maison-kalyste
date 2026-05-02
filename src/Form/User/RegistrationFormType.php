@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\User;
 
 use App\DTO\User\RegistrationDTO;
 use Symfony\Component\Form\AbstractType;
@@ -39,7 +39,13 @@ class RegistrationFormType extends AbstractType
                 ],
                 'label' => 'Nom',
             ])
-
+            ->add('username', TextType::class, [
+                'constraints' => [
+                    new Assert\NotBlank(),
+                    new Assert\Length(min: 2, max: 50),
+                ],
+                'label' => 'Identifiant',
+            ])
             ->add('email', EmailType::class, [
                 'constraints' => [
                     new Assert\NotBlank(),
@@ -70,7 +76,7 @@ class RegistrationFormType extends AbstractType
                         <a href="%s" target="_blank" class="font-bold">conditions générales de vente</a>, 
                         <a href="%s" target="_blank" class="font-bold">conditions générales d\'utilisation</a> 
                         et la 
-                        <a href="%s" target="_blank" class=class="font-bold">politique de confidentialité</a>.',
+                        <a href="%s" target="_blank" class="font-bold">politique de confidentialité</a>.',
                     $this->router->generate('app_informations_cgv'),
                     $this->router->generate('app_informations_cgu'),
                     $this->router->generate('app_informations_privacy')

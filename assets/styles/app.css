@@ -132,4 +132,18 @@ input[type=checkbox] {
     @apply font-semibold;
 }
 
+/* Account */
+
+.account-btn {
+    @apply bg-(--secondary-color) px-4 py-3 text-sm duration-150;
+}
+
+.account-btn:hover {
+    @apply bg-(--main-color) text-(--secondary-color);
+}
+
+.account-btn-active {
+    @apply font-bold;
+}
+
 .hidden { display:none; }

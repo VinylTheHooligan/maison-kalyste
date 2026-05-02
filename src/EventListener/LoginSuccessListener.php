@@ -4,25 +4,30 @@ namespace App\EventListener;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 
+#[AsEventListener(event: LoginSuccessEvent::class)]
 class LoginSuccessListener {
     public function __construct(
         private EntityManagerInterface $em,
     )
     {}
 
-    public function __invoke(LoginSuccessEvent $event)
+    public function __invoke(LoginSuccessEvent $event): void
     {
-        $user = $event->getUser();
 
-        /** @var User $user */
-        if (!$user instanceof User) {
+        /** @var User $passportUser */
+        $passportUser = $event->getPassport()?->getUser();
+    
+        $user = $this->em->getRepository(User::class)->find($passportUser->getId());
+    
+        if ($user === null)
+        {
             return;
         }
-
+    
         $user->setLastLoginAt(new \DateTimeImmutable());
-
         $this->em->flush();
     }
 }

@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="flex justify-center">
+        <div class="flex flex-col gap-10 w-300 bg-(--third-color) my-6 p-6 px-10 pb-30">
+            <div class="flex flex-col items-center gap-3">
+                <h2 class="font-bold text-3xl">Mon compte</h2>
+                <span>Retrouvez toutes vos informations sur votre compte.</span>
+            </div>
+            {% set route = app.request.attributes.get('_route') %}
+            <ul class="flex justify-center">
+                <li><a class="account-btn {% if route == 'app_account_my' %} account-btn-active{% endif %}" href="{{ path("app_account_my") }}">Mon compte</a></li>
+                <li><a class="account-btn {% if route == 'app_account_orders' %} account-btn-active{% endif %}" href="{{ path("app_account_orders") }}">Commandes</a></li>
+                <li><a class="account-btn {% if route == 'app_account_addresses' %} account-btn-active{% endif %}" href="{{ path("app_account_addresses") }}">Adresses</a></li>
+                <li><a class="account-btn {% if route == 'app_account_payments' %} account-btn-active{% endif %}" href="{{ path("app_account_payments") }}">Moyens de paiement</a></li>
+                <li><a class="account-btn {% if route == 'app_account_info' %} account-btn-active{% endif %}" href="{{ path("app_account_info") }}">Mes informations</a></li>
+                <li><a class="account-btn" href="{{ path("app_logout") }}">Déconnexion</a></li>
+            </ul>
+            {% block account %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

@@ -20,6 +20,7 @@ class AssemblerDTOService {
         $user->setEmail($dto->email);
         $user->setFirstName($dto->firstName);
         $user->setLastName($dto->lastName);
+        $user->setUsername($dto->username);
         $user->setRoles(['ROLE_USER']);
 
         $hashed = $this->hasher->hashPassword($user, $dto->plainPassword);

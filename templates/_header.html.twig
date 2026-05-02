@@ -8,7 +8,13 @@
                 <h1 class="font-allura text-center text-5xl"><a href="{{ path("app_home") }}"><span class="pe-5">Maison</span>Kalyste</a></h1>
             </div>
             <div class="w-full flex flex-row justify-end">
-                <a href="{{ path("app_login") }}" class="cursor-pointer">
+                <a href="
+                    {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
+                        {{ path("app_login") }}
+                    {% else %}
+                        {{ path("app_account_my") }}
+                    {% endif %}
+                    " class="cursor-pointer">
                     <img class="w-10" src="{{ asset("/image/ui/account.svg") }}" alt="">
                 </a>
                 <a data-cart-target="button" class="cursor-pointer">
@@ -16,7 +22,7 @@
                 </a>
             </div>
         </div>
-        <nav class="flex justify-center gap-6 py-2 bg-(--third-color)" aria-label="Barre de navigation">
+        <nav class="flex justify-center gap-6 py-1 bg-(--third-color)" aria-label="Barre de navigation">
             <a href="" class="btn-header">Collections</a>
             <a href="" class="btn-header">Nouveautés</a>
             <a href="" class="btn-header">Best-sellers</a>

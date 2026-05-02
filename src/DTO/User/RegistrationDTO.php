@@ -18,6 +18,10 @@ class RegistrationDTO
     #[Assert\Length(min: 2, max: 100)]
     public ?string $lastName = null;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 100)]
+    public ?string $username = null;
+
     #[Assert\Length(min: 8)]
     public ?string $plainPassword = null;
 

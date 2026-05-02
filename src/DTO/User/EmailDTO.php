@@ -4,7 +4,7 @@ namespace App\DTO\User;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class ResendActivationDTO
+class EmailDTO
 {
     #[Assert\NotBlank]
     #[Assert\Email]

@@ -42,7 +42,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     #[ORM\Column]
     private ?string $password = null;
-
+    
     #[Assert\NotBlank]
     #[ORM\Column(length: 100)]
     private ?string $firstName = null;
@@ -91,6 +91,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $resetPasswordExpiresAt = null;
 
+    #[ORM\Column(length: 100)]
+    private ?string $username = null;
 
     public function __construct()
     {
@@ -380,6 +382,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setResetPasswordExpiresAt(?\DateTimeImmutable $expiresAt): self
     {
         $this->resetPasswordExpiresAt = $expiresAt;
+        return $this;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
+
         return $this;
     }
 }

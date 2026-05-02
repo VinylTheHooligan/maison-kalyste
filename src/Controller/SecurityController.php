@@ -2,15 +2,13 @@
 
 namespace App\Controller;
 
-use App\DTO\User\ForgotPasswordDTO;
+use App\DTO\User\EmailDTO;
 use App\DTO\User\RegistrationDTO;
-use App\DTO\User\ResendActivationDTO;
 use App\DTO\User\ResetPasswordDTO;
-use App\Entity\User;
-use App\Form\ForgotPasswordFormType;
-use App\Form\RegistrationFormType;
-use App\Form\ResendActivationFormType;
-use App\Form\ResetPasswordFormType;
+use App\Form\User\ForgotPasswordFormType;
+use App\Form\User\ResetPasswordFormType;
+use App\Form\User\RegistrationFormType;
+use App\Form\User\EmailFormType;
 use App\Repository\UserRepository;
 use App\Services\ActivationEmailService;
 use App\Services\AssemblerDTOService;
@@ -129,9 +127,9 @@ class SecurityController extends AbstractController
         EntityManagerInterface $em
     ): Response
     {
-        $dto = new ResendActivationDTO();
+        $dto = new EmailDTO();
 
-        $form = $this->createForm(ResendActivationFormType::class, $dto);
+        $form = $this->createForm(EmailFormType::class, $dto);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid())
@@ -174,7 +172,7 @@ class SecurityController extends AbstractController
         EntityManagerInterface $em
     ): Response
     {
-        $dto = new ForgotPasswordDTO();
+        $dto = new EmailDTO();
 
         $form = $this->createForm(ForgotPasswordFormType::class, $dto);
         $form->handleRequest($request);
