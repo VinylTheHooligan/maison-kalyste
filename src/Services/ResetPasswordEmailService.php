@@ -15,11 +15,11 @@ class ResetPasswordEmailService
     )
     {}
 
-    public function sendResetEmail(User $user): void
+    public function sendResetEmail(User $user, $rawToken): void
     {
         $resetUrl = $this->urlGenerator->generate(
             'app_reset_password',
-            ['token' => $user->getResetPasswordToken()],
+            ['token' => $rawToken],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 

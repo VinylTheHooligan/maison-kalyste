@@ -2,7 +2,7 @@
 
 namespace App\Form\User\AccountInfo;
 
-use App\DTO\ChangePasswordDTO;
+use App\DTO\User\ChangePasswordDTO;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -18,14 +18,12 @@ class NewPasswordFormType extends AbstractType
         $builder
             ->add('oldPassword', PasswordType::class, [
                 'label' => 'Ancien mot de passe',
-                'mapped' => false
             ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
                 'first_options' => ['label' => 'Mot de passe'],
                 'second_options' => ['label' => 'Confirmer le mot de passe'],
-                'mapped' => false,
                 'constraints' => [
                     new Assert\NotBlank(),
                     new Assert\Length(min: 8),
@@ -42,6 +40,7 @@ class NewPasswordFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => ChangePasswordDTO::class,
+            'validation_groups' => ['password_change'],
         ]);
     }
 }

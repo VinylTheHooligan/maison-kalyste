@@ -77,19 +77,22 @@ final class InformationsController extends AbstractController
         $form = $this->createForm(ContactMessageType::class, $contact);
         $form->handleRequest($request);
 
-        // honeypot à bot                                                                   
-        if ($form->has('website') && $form->get('website')->getData())
+        if ($form->isSubmitted())
         {
-            return $this->redirectToRoute('app_home');
-        }
+            // honeypot à bot                                                                   
+            if ($form->has('website') && $form->get('website')->getData())
+            {
+                return $this->redirectToRoute('app_home');
+            }
 
-        if ($form->isSubmitted() && $form->isValid())
-        {
-            $em->persist($contact);
-            $em->flush();
+            if ($form->isValid())
+            {
+                $em->persist($contact);
+                $em->flush();
 
-            $this->addFlash('success', 'Votre message à bien été soumis !');
-            return $this->redirectToRoute('app_home');
+                $this->addFlash('success', 'Votre message à bien été soumis !');
+                return $this->redirectToRoute('app_home');
+            }
         }
 
         return $this->render('informations/contact.html.twig', [

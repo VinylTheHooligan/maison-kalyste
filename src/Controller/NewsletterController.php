@@ -21,10 +21,7 @@ final class NewsletterController extends AbstractController
 
         if (!$email)
         {
-            $this->addFlash(
-               'error',
-               $errorMessage
-            );
+            $this->addFlash('error', $errorMessage);
             return $this->redirectToRoute('app_home');
         }
 
@@ -33,10 +30,7 @@ final class NewsletterController extends AbstractController
 
         if ($existing)
         {
-            $this->addFlash(
-               'error',
-               $errorMessage
-            );
+            $this->addFlash('error', $errorMessage);
             return $this->redirectToRoute('app_home');
         }
 
@@ -47,7 +41,6 @@ final class NewsletterController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', 'Merci ! Vous êtes maintenant inscrit à la newsletter.');
-
         return $this->redirectToRoute('app_home');
     }
 }

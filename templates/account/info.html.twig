@@ -41,6 +41,31 @@
                     </div>
                 {{ form_end(formNameUser) }}
                 <hr>
+                {{ form_start(formEmail)}}
+                    <div class="flex flex-col gap-4">
+                        <div class="flex flex-col">
+                            {{ form_label(formEmail.oldEmail, null, {
+                                label_attr: { class: 'form-label' }
+                            }) }}
+                            {{ form_widget(formEmail.oldEmail, {
+                                attr: { class: 'form-input' }
+                            }) }}
+                        </div>
+                        <div class="flex flex-col">
+                            {{ form_label(formEmail.newEmail, null, {
+                                label_attr: { class: 'form-label' }
+                            }) }}
+                            {{ form_widget(formEmail.newEmail, {
+                                attr: { class: 'form-input' }
+                            }) }}
+                        </div>
+                        <div class="flex flex-col">
+                            {{ form_label(formEmail.submit) }}
+                            {{ form_widget(formEmail.submit) }}
+                        </div>
+                    </div>
+                {{ form_end(formEmail)}}
+                <hr>
                 {{ form_start(formPassword)}}
                     <div class="flex flex-col gap-4">
                         <div class="flex flex-col">
@@ -72,7 +97,7 @@
                             {{ form_widget(formPassword.submit) }}
                         </div>
                     </div>
-                {{ form_end(formPassword )}}
+                {{ form_end(formPassword)}}
             </div>
         </div>
     </div>

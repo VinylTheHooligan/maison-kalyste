@@ -14,11 +14,14 @@ class ActivationEmailService {
     )
     {}
 
-    public function sendActivationEmail(User $user): void
+    public function sendActivationEmail(User $user, string $rawToken, bool $isRegistration): void
     {
+        if ($isRegistration) $template = 'emails/regActivation.html.twig';
+        else $template = 'emails/emailChangeActivation.html.twig';
+
         $activationUrl = $this->urlGenerator->generate(
             'app_activate_account',
-            ['token' => $user->getActivationToken()],
+            ['token' => $rawToken],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
@@ -26,7 +29,7 @@ class ActivationEmailService {
             ->from('no-reply@maisonkalyste.fr')
             ->to($user->getEmail())
             ->subject($user->getFirstName() . ', activez votre compte ! - Maison Kalyste')
-            ->htmlTemplate('emails/activation.html.twig')
+            ->htmlTemplate($template)
             ->context([
                 'user' => $user,
                 'activationUrl' => $activationUrl,

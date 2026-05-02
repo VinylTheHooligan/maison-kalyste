@@ -13,7 +13,7 @@ class AssemblerDTOService {
     )
     {}
 
-    public function fromRegistrationDTO(RegistrationDTO $dto): User
+    public function fromRegistrationDTO(RegistrationDTO $dto, string $token): User
     {
         $user = new User();
 
@@ -27,8 +27,8 @@ class AssemblerDTOService {
         $user->setPassword($hashed);
 
         $user->setIsVerified(false);
-        $user->setActivationToken(bin2hex(random_bytes(32)));
 
+        $user->setActivationToken(hash('sha256', $token));
         return $user;
     }
 

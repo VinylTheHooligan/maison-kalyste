@@ -19,6 +19,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
+
 
 class SecurityController extends AbstractController
 {
@@ -63,7 +65,8 @@ class SecurityController extends AbstractController
             $dto->plainPassword = $form->get('plainPassword')->getData();
             $dto->agreeTerms = $form->get('agreeTerms')->getData();
 
-            $user = $assembler->fromRegistrationDTO($dto);
+            $token = bin2hex(random_bytes(32));
+            $user = $assembler->fromRegistrationDTO($dto, $token);
 
             $user->setActivationExpiresAt(
                 new \DateTimeImmutable('+24 hours')
@@ -72,7 +75,7 @@ class SecurityController extends AbstractController
             $em->persist($user);
             $em->flush();
 
-            $activationEmailService->sendActivationEmail($user);
+            $activationEmailService->sendActivationEmail($user, $token, true);
 
             $this->addFlash('success', "Votre compte a bien été créé. Vérifiez vos emails pour l'activer.");
 
@@ -92,9 +95,22 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/activate/{token}', name: 'app_activate_account')]
-    public function activate(string $token, UserRepository $userRepository, EntityManagerInterface $em): Response
+    public function activate(
+        string $token, 
+        UserRepository $userRepository, 
+        EntityManagerInterface $em,
+        RateLimiterFactory $activation_link
+    ): Response
     {
-        $user = $userRepository->findOneBy(['activationToken' => $token]);
+        $limit = $activation_link->create($token);
+
+        if (false === $limit->consume(1)->isAccepted())
+        {
+            $this->addFlash('danger', 'Trop de tentatives. Réessayez plus tard.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $user = $userRepository->findOneBy(['activationToken' => hash('sha256', $token)]);
 
         if (!$user)
         {
@@ -115,7 +131,6 @@ class SecurityController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', "Votre compte est maintenant activé. Vous pouvez vous connecter.");
-
         return $this->redirectToRoute('app_login');
     }
 
@@ -124,7 +139,8 @@ class SecurityController extends AbstractController
         Request $request,
         UserRepository $userRepository,
         ActivationEmailService $activationEmailService,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        RateLimiterFactory $resend_activation
     ): Response
     {
         $dto = new EmailDTO();
@@ -134,6 +150,13 @@ class SecurityController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid())
         {
+            $limit = $resend_activation->create($request->getClientIp());
+
+            if (false === $limit->consume(1)->isAccepted()) {
+                $this->addFlash('danger', "Trop de demandes. Réessayez plus tard.");
+                return $this->redirectToRoute('app_resend_activation');
+            }
+
             $user = $userRepository->findOneBy(['email' => $dto->email]);
 
             if (!$user)
@@ -148,12 +171,15 @@ class SecurityController extends AbstractController
                 return $this->redirectToRoute('app_login');
             }
 
-            $user->setActivationToken(bin2hex(random_bytes(32)));
+            $token = bin2hex(random_bytes(32));
+            $hashedToken = hash('sha256', $token);
+
+            $user->setActivationToken($hashedToken);
             $user->setActivationExpiresAt(new \DateTimeImmutable('+24 hours'));
 
             $em->flush();
 
-            $activationEmailService->sendActivationEmail($user);
+            $activationEmailService->sendActivationEmail($user, $token, true);
 
             $this->addFlash('success', "Un nouvel email d'activation vous a été envoyé.");
             return $this->redirectToRoute('app_login');
@@ -169,7 +195,8 @@ class SecurityController extends AbstractController
         Request $request,
         UserRepository $userRepository,
         ResetPasswordEmailService $resetPasswordEmailService,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        RateLimiterFactory $forgot_password
     ): Response
     {
         $dto = new EmailDTO();
@@ -179,15 +206,23 @@ class SecurityController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid())
         {
+            $limit = $forgot_password->create($request->getClientIp());
+
+            if (!$limit->consume(1)->isAccepted()) {
+                $this->addFlash('danger', "Trop de tentatives. Réessayez plus tard.");
+                return $this->redirectToRoute('app_forgot_password');
+            }
+
             $user = $userRepository->findOneBy(['email' => $dto->email]);
 
             if ($user)
             {
-                $user->setResetPasswordToken(bin2hex(random_bytes(32)));
+                $token = bin2hex(random_bytes(32));
+                $user->setResetPasswordToken(hash('sha256', $token));
                 $user->setResetPasswordExpiresAt(new \DateTimeImmutable('+1 hour'));
                 $em->flush();
 
-                $resetPasswordEmailService->sendResetEmail($user);
+                $resetPasswordEmailService->sendResetEmail($user, $token);
             }
 
             $this->addFlash('success', 'Si un compte existe, un email a été envoyé.');
@@ -208,7 +243,7 @@ class SecurityController extends AbstractController
         EntityManagerInterface $em
     ): Response
     {
-        $user = $userRepository->findOneBy(['resetPasswordToken' => $token]);
+        $user = $userRepository->findOneBy(['resetPasswordToken' => hash('sha256', $token)]);
 
         if (!$user || $user->getResetPasswordExpiresAt() < new \DateTimeImmutable())
         {

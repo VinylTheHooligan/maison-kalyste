@@ -2,10 +2,14 @@
 
 namespace App\Controller;
 
-use App\DTO\ChangePasswordDTO;
+use App\DTO\User\ChangeEmailDTO;
+use App\DTO\User\ChangePasswordDTO;
 use App\Entity\User;
 use App\Form\User\AccountInfo\NewPasswordFormType;
 use App\Form\User\AccountInfo\NameUsernameFormType;
+use App\Form\User\AccountInfo\NewEmailFormType;
+use App\Services\ActivationEmailService;
+use App\Services\ResetPasswordEmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,7 +60,12 @@ final class AccountController extends AbstractController
     }
 
     #[Route('/info', name: '_info')]
-    public function info(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response
+    public function info(
+        Request $request, 
+        EntityManagerInterface $em, 
+        UserPasswordHasherInterface $hasher,
+        ActivationEmailService $activationEmailService,
+    ): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -64,9 +73,13 @@ final class AccountController extends AbstractController
         $formNameUser = $this->createForm(NameUsernameFormType::class, $user);
         $formNameUser->handleRequest($request);
 
-        $dto = new ChangePasswordDTO();
-        $formPassword = $this->createForm(NewPasswordFormType::class, $dto);
+        $dtoPassword = new ChangePasswordDTO();
+        $formPassword = $this->createForm(NewPasswordFormType::class, $dtoPassword);
         $formPassword->handleRequest($request);
+
+        $dtoEmail = new ChangeEmailDTO();
+        $formEmail = $this->createForm(NewEmailFormType::class, $dtoEmail);
+        $formEmail->handleRequest($request);
 
         if ($formNameUser->isSubmitted() && $formNameUser->isValid())
         {
@@ -78,13 +91,13 @@ final class AccountController extends AbstractController
 
         if ($formPassword->isSubmitted() && $formPassword->isValid())
         {
-            if (!$hasher->isPasswordValid($user, $dto->oldPassword))
+            if (!$hasher->isPasswordValid($user, $dtoPassword->oldPassword))
             {
                 $this->addFlash('error', 'Ancien mot de passe incorrect.');
                 return $this->redirectToRoute('app_account_info');
             }
 
-            $user->setPassword($hasher->hashPassword($user, $dto->plainPassword));
+            $user->setPassword($hasher->hashPassword($user, $dtoPassword->plainPassword));
             $user->setUpdatedAt(new \DateTimeImmutable());
 
             $em->flush();
@@ -92,10 +105,36 @@ final class AccountController extends AbstractController
             return $this->redirectToRoute('app_account_info');
         }
 
+        if ($formEmail->isSubmitted() && $formEmail->isValid())
+        {
+            if (trim(strtolower($dtoEmail->oldEmail)) !== trim(strtolower($user->getEmail()))) {
+                $this->addFlash('error', 'Ancien e-mail incorrect.');
+                return $this->redirectToRoute('app_account_info');
+            }
+
+            $token = bin2hex(random_bytes(32));
+            $hashedToken = hash('sha256', $token);
+
+            $user->setActivationToken($hashedToken);
+            $user->setActivationExpiresAt(new \DateTimeImmutable('+24 hours'));
+            
+            $em->flush();
+
+            $activationEmailService->sendActivationEmail($user, $token, false);
+
+            $this->addFlash('success', 'Un mail de confirmation a été envoyé sur le nouvel e-mail afin de le validé.');
+            return $this->redirectToRoute('app_account_info');
+        }
+
         return $this->render('account/info.html.twig', [
-            'formNameUser' => $formNameUser->createView(),
-            'formPassword' => $formPassword->createView(),
+            'formNameUser' => $formNameUser,
+            'formPassword' => $formPassword,
+            'formEmail' => $formEmail,
             'controller_name' => 'accountController'
-        ]);
+        ], new Response(
+            status: $formNameUser->isSubmitted() 
+        || $formPassword->isSubmitted() 
+        || $formEmail->isSubmitted() 
+            ? 422 : 200));
     }
 }
