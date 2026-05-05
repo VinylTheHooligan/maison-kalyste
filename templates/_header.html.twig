@@ -17,8 +17,11 @@
                     " class="cursor-pointer">
                     <img class="w-10" src="{{ asset("/image/ui/account.svg") }}" alt="">
                 </a>
-                <a data-cart-target="button" class="cursor-pointer">
+                <a data-cart-target="button" class="cursor-pointer relative">
                     <img class="w-10" src="{{ asset("/image/ui/cart.svg") }}" alt="">
+                    <span data-cart-target="count"
+                          class="hidden absolute -top-1 -right-1 bg-(--primary-color) text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                    </span>
                 </a>
             </div>
         </div>

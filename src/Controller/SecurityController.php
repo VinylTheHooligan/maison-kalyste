@@ -15,6 +15,7 @@ use App\Services\AssemblerDTOService;
 use App\Services\ResetPasswordEmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -99,6 +100,7 @@ class SecurityController extends AbstractController
         string $token, 
         UserRepository $userRepository, 
         EntityManagerInterface $em,
+        #[Autowire(service: 'limiter.activation_link')]
         RateLimiterFactory $activation_link
     ): Response
     {
@@ -140,6 +142,7 @@ class SecurityController extends AbstractController
         UserRepository $userRepository,
         ActivationEmailService $activationEmailService,
         EntityManagerInterface $em,
+        #[Autowire(service: 'limiter.resend_activation')]
         RateLimiterFactory $resend_activation
     ): Response
     {
@@ -196,6 +199,7 @@ class SecurityController extends AbstractController
         UserRepository $userRepository,
         ResetPasswordEmailService $resetPasswordEmailService,
         EntityManagerInterface $em,
+        #[Autowire(service: 'limiter.forgot_password')]
         RateLimiterFactory $forgot_password
     ): Response
     {

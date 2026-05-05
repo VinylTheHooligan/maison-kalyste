@@ -1,8 +1,8 @@
 # Documentation Complète - Maison Kalyste
 
-**Dernière mise à jour:** 2 mai 2026  
-**État du projet:** ~60-70% complétée (fondations solides, fonctionnalités core en cours)  
-**Auteur audit:** Analyse d'audit sénior Symfony/PHP/JS
+**Dernière mise à jour:** 3 mai 2026  
+**État du projet:** ~75% complétée (Authentification 100%, Core e-commerce 0% en cours)  
+**Auteur audit:** Analyse d'audit sénior Symfony/PHP/JS - Exploration complète du codebase
 
 ---
 
@@ -11,18 +11,17 @@
 1. [Vue d'ensemble](#vue-densemble)
 2. [Stack technique](#stack-technique)
 3. [État du projet](#état-du-projet)
-4. [Architecture](#architecture)
-5. [Audit de sécurité](#audit-de-sécurité)
+4. [Controllers et endpoints](#controllers-et-endpoints)
+5. [Services et logique métier](#services-et-logique-métier)
 6. [Entités et modèle de données](#entités-et-modèle-de-données)
-7. [Contrôleurs et endpoints](#contrôleurs-et-endpoints)
-8. [Services et logique métier](#services-et-logique-métier)
-9. [Formulaires et validation](#formulaires-et-validation)
-10. [Authentification et autorisations](#authentification-et-autorisations)
-11. [Frontend et Stimulus controllers](#frontend-et-stimulus-controllers)
-12. [Configuration](#configuration)
-13. [Base de données](#base-de-données)
-14. [Axes d'amélioration](#axes-damélioration)
-15. [Checklist avant production](#checklist-avant-production)
+7. [Formulaires et validation](#formulaires-et-validation)
+8. [Authentification et autorisations](#authentification-et-autorisations)
+9. [Rate limiting et sécurité](#rate-limiting-et-sécurité)
+10. [Frontend et Stimulus controllers](#frontend-et-stimulus-controllers)
+11. [Configuration](#configuration)
+12. [Base de données](#base-de-données)
+13. [Axes d'amélioration](#axes-damélioration)
+14. [Checklist avant production](#checklist-avant-production)
 
 ---
 
@@ -33,916 +32,473 @@
 **Framework:** Symfony 7.4  
 **PHP:** >=8.2  
 **Base de données:** PostgreSQL 16 (Docker)  
-**Architecture:** MVC avec DTOs et Services
+**Architecture:** MVC avec DTOs, Services, Event Listeners
 
 ### Objectif du projet
 
-Maison Kalyste est une plateforme e-commerce complète permettant:
-- ✅ Consulter un catalogue de produits
-- ✅ Gérer un panier d'achat
-- ✅ S'authentifier et gérer son profil
-- ✅ Passer des commandes
-- ✅ Gérer les adresses de livraison
-- ✅ Traiter les paiements
-- ✅ Utiliser des codes de réduction
-- ✅ S'inscrire à la newsletter
-- ✅ Soumettre des messages de contact
+Plateforme e-commerce complète permettant:
+- ✅ S'authentifier (login/register/logout)
+- ✅ Vérifier son email (token 24h)
+- ✅ Réinitialiser son mot de passe (1h token)
+- ✅ Gérer son profil (nom, email, password)
+- ✅ Consulter un catalogue de produits (À FAIRE)
+- ✅ Gérer un panier d'achat (À FAIRE)
+- ✅ Passer des commandes (À FAIRE)
+- ✅ Gérer les adresses de livraison (À FAIRE)
+- ✅ Traiter les paiements (À FAIRE)
+- ✅ Utiliser des codes de réduction (À FAIRE)
+- ✅ S'inscrire à la newsletter (OK)
+- ✅ Soumettre des messages de contact (OK)
 
 ---
 
 ## Stack technique
 
 ### Backend
-- **Framework:** Symfony 7.4.*
-- **ORM:** Doctrine 3.6 (mapping par attributs)
-- **Migrations:** Doctrine Migrations 3.7
-- **Validation:** Symfony Validator
-- **Sécurité:** Symfony Security Bundle 7.4
-- **Mailer:** Symfony Mailer 7.4
-- **Messenger:** Symfony Messenger (async queues)
-- **Notifier:** Symfony Notifier 7.4
-- **Rate Limiter:** Symfony Rate Limiter 7.4
-- **Testing:** PHPUnit + Zenstruck Foundry (fixtures)
+- **Framework:** Symfony 7.4.* | ORM: Doctrine 3.6 (attributes)
+- **Sécurité:** Security Bundle + UserChecker + Rate Limiter + Nelmio Headers
+- **Services:** Mailer 7.4, Messenger (async), Validator
+- **Testing:** PHPUnit + Zenstruck Foundry
+- **Bundles:** 14 total (FrameworkBundle, DoctrineBundle, TwigBundle, StimulusBundle, etc.)
 
 ### Frontend
-- **Template Engine:** Twig 3.0
-- **JavaScript Framework:** Stimulus 3.2.2 (UX Bundle)
-- **Page Navigation:** Turbo 7.3.0 (AJAX nav)
-- **CSS Framework:** Tailwind CSS (via SymfonyCasts Bundle)
-- **Asset Management:** Symfony Asset Mapper 7.4
-- **Carousel:** Swiper.js (stimulus controller)
-- **Notifications:** Toast notifications (stimulus)
+- **Templating:** Twig 3.0 | JS Framework: Stimulus 3.2.2
+- **Navigation:** Turbo 7.3.0 (AJAX) | CSS: Tailwind CSS
+- **Components:** Swiper.js (carousel), CartManager.js (state)
+- **Controllers:** 5 Stimulus controllers (carousel, cart, csrf, toast, hello)
 
-### Base de données
-- **SGBD:** PostgreSQL 16 (Alpine)
-- **Versioning:** Doctrine Migrations (7 migrations en place)
-- **Stratégie d'identifiant:** PostgreSQL IDENTITY
+### Database
+- **PostgreSQL 16** (Docker Alpine) | **16 Tables** | **7 Migrations**
+- **Strategy:** Doctrine Migrations with auto-increments
 
 ### Infrastructure
-- **Orchestration:** Docker Compose
-- **Services:**
-  - PostgreSQL 16 (base de données)
-  - Mailpit (SMTP testing avec UI web)
-- **Configuration:** Variables d'environnement (.env)
+- **Docker Compose:** PostgreSQL 16 + Mailpit (SMTP + UI)
+- **Config:** .env variables for DATABASE_URL, MAILER_DSN, etc.
 
 ---
 
 ## État du projet
 
-### Avancée globale: 60-70%
+### Avancée globale: 75%
 
-| Composante | État | Avancée | Notes |
-|-----------|------|---------|-------|
-| **Authentification** | ✅ Fonctionnelle | 100% | Login/Register/Logout/EmailActivation/PasswordReset TOUS OK |
-| **Catalogue produits** | ❌ Incomplet | 10% | Entité OK, zéro contrôleur/template |
-| **Panier** | ❌ Incomplet | 20% | Entité OK, CartManager.js basique, API manquante |
-| **Paiement** | ❌ Non démarré | 0% | Entité Payment existe, zéro intégration (Stripe/PayPal) |
-| **Commandes** | ❌ Incomplet | 10% | Entités OK, zéro UI utilisateur |
+| Composante | État | % Avancé | Détails |
+|-----------|------|----------|---------|
+| **Authentification** | ✅ Complète | 100% | Login/Register/Email verify/Password reset + email change |
+| **Profil utilisateur** | ✅ Complet | 100% | Name/Email/Password with verification |
+| **Newsletter** | ✅ Complète | 100% | Subscribe form + storage |
+| **Contact form** | ✅ Complet | 100% | Honeypot, rate limiting, storage |
+| **Catalogue produits** | ❌ Non démarré | 0% | Entities OK, contrôleur manquant |
+| **Panier** | ❌ Incomplet | 20% | Entities OK, CartManager basique, API manquante |
+| **Checkout** | ❌ Non démarré | 0% | Entities OK, logique manquante |
+| **Paiement** | ❌ Non démarré | 0% | Entity Payment, zéro intégration |
 | **Admin Panel** | ❌ Non démarré | 0% | Zéro interface |
-| **Tests unitaires** | ❌ Absents | 0% | phpunit.dist.xml existe, zéro tests implémentés |
-| **Documentation API** | ❌ Absente | 0% | Pas de Swagger/OpenAPI |
-| **Performance** | ⚠️ Non optimisée | 0% | Pas de caching, pas d'index DB |
-| **DevOps/CI-CD** | ❌ Absent | 0% | Docker OK, pas de pipeline |
+| **Tests** | ❌ Absents | 0% | PHPUnit configuré, zéro tests |
 
 ### Points forts ✅
-- ✅ Authentification **100% complète et sécurisée**
-- ✅ Réinitialisation de mot de passe fonctionnelle
-- ✅ Vérification email par token avec expiration
-- ✅ Rediffusion du token d'activation
-- ✅ **Tokens hashés en base de données** (SHA256)
-- ✅ **Rate limiting sur endpoints sensibles** (activate, resend, forgot, contact)
-- ✅ **Honeypot validé côté backend**
-- ✅ **CORS configuré (Nelmio)**
-- ✅ Architecture clean et bien structurée
-- ✅ Utilisation correcte des DTOs et Services
-- ✅ Migrations en place
-- ✅ Email services fonctionnels
-- ✅ Stimulus controllers bien organisés
-- ✅ Modèle de données complet et cohérent
+- ✅ **Authentification 100% sécurisée** (all flows)
+- ✅ **Gestion profil avancée** (email/password change with verification)
+- ✅ **Tokens SHA256** en base de données
+- ✅ **Rate limiting multi-niveaux** (5 limiters: activation, resend, forgot, contact, global_api)
+- ✅ **Honeypot protection** (contact form)
+- ✅ **Security headers** (Nelmio: DENY, no-sniff, referrer-policy)
+- ✅ **Event Listeners** (LoginSuccessListener, GlobalThrottleListener)
+- ✅ **8 Forms** with validation
+- ✅ **3 Email Services** (Activation, Reset, EmailChange)
+- ✅ **15 Entities** well modeled
+- ✅ **5 Stimulus controllers** interactive
+- ✅ **Clean architecture** (DTOs, Services, Repositories, Enums)
 
-### Points faibles restants ❌
-- **Tests:** Zéro coverage (À faire)
-- **Fonctionnalités:** Core e-commerce incomplet (produits, cart, paiement)
+### Points faibles ❌
+- **Core e-commerce:** Products, Cart, Checkout, Payment (À FAIRE)
+- **Tests:** Zéro coverage
 - **Admin:** Inexistant
-- **API:** Pas d'endpoints REST
-- **Performance:** Pas d'optimisations (caching, indexes)
-- **Monitoring:** Zéro logs structurés
+- **API REST:** Pas d'endpoints JSON
+- **Performance:** No caching, partial indexes
 
 ---
 
-## Audit de sécurité
+## Controllers et endpoints
 
-### ✅ CE QUI EST CORRECTEMENT IMPLÉMENTÉ
+### ✅ 5 CONTROLLERS IMPLEMENTED
 
-#### 1. Réinitialisation de mot de passe ✅
-**Statut:** IMPLÉMENTÉE
-
-- ✅ `/forgot-password` - Génère `resetPasswordToken` avec expiry 1h
-- ✅ `/reset-password/{token}` - Valide le token et met à jour le password
-- ✅ Validation d'expiration du token
-- ✅ Efface le token après utilisation
-- ✅ Envoi d'email via `ResetPasswordEmailService`
-
-Code:
-```php
-// forgot() - Ligne 124
-$user->setResetPasswordToken(bin2hex(random_bytes(32)));
-$user->setResetPasswordExpiresAt(new \DateTimeImmutable('+1 hour'));
-$resetPasswordEmailService->sendResetEmail($user);
-
-// reset() - Ligne 163 - Validation d'expiration
-if (!$user || $user->getResetPasswordExpiresAt() < new \DateTimeImmutable()) {
-    throw new \Exception('Token invalide ou expiré');
-}
-```
-
-#### 2. Tokens d'activation avec validation d'expiration ✅
-**Statut:** IMPLÉMENTÉE
-
-```php
-// activate() - Ligne 78
-if ($user->getActivationExpiresAt() < new \DateTimeImmutable()) {
-    $this->addFlash('danger', "Le lien d'activation a expiré.");
-    return $this->redirectToRoute('app_resend_activation');
-}
-```
-
-✅ Validation stricte : token doit être activé dans les 24h
-✅ Redirection vers `/resend-activation` si expiré
-✅ Les utilisateurs peuvent régénérer le token
-
-#### 3. Resend activation ✅
-**Statut:** IMPLÉMENTÉE
-
-Route `/resend-activation` (ligne 98) permet:
-- Régénérer un token d'activation
-- Envoyer un nouvel email
-- Vérifier que le compte n'est pas déjà activé
-
-### 🔴 FAILLES CRITIQUES (À corriger AVANT production)
-
-#### 1. Pas de rate limiting sur activation
-**Sévérité:** 🔴 CRITIQUE
-
-```yaml
-# rate_limiter.yaml - MANQUANT:
-activation_attempt:
-  policy: sliding_window
-  limit: 10
-  interval: 15 minutes
-```
-
-**Impact:** Brute force possible pour deviner tokens d'activation (36^20 possibilités mais sans limite d'essais)  
-**Action requise:** Ajouter rate limiting sur `/activate/{token}` et `/resend-activation`
-
-#### 4. Honeypot du formulaire de contact ✅
-**Statut:** IMPLÉMENTÉE
-
-Code (InformationsController, ligne 78-82):
-```php
-if ($form->has('website') && $form->get('website')->getData())
-{
-    return $this->redirectToRoute('app_home');
-}
-```
-
-✅ Vérifie que le champ invisible est vide
-✅ Rejette silencieusement les bots (redirect vers home)
-✅ N'expose pas que c'est un honeypot
-
-#### 5. Rate limiting sur les endpoints sensibles ✅
-**Statut:** IMPLÉMENTÉE
-
-- ✅ `/activate/{token}` - Rate limiting configuré
-- ✅ `/resend-activation` - Rate limiting configuré
-- ✅ `/forgot-password` - Rate limiting configuré
-- ✅ `/contact` - Rate limiting 3 tentatives/minute par IP (ligne 67)
-
-Code:
-```php
-$limiter = $contactFormLimiter->create($request->getClientIp());
-if (!$limiter->consume(1)->isAccepted()) {
-    throw new TooManyRequestsHttpException(...);
-}
-```
-
-#### 6. Tokens hashés en base de données ✅
-**Statut:** IMPLÉMENTÉE
-
-- ✅ `activationToken` - Hashés (SHA256)
-- ✅ `resetPasswordToken` - Hashés (SHA256)
-- ✅ Comparaison en base via hash
-- ✅ Migration effectuée
-
-#### 7. CORS configuré (Nelmio) ✅
-**Statut:** INSTALLÉ
-
-- ✅ Nelmio CORS Bundle installé
-- ✅ Configuration à vérifier dans `config/packages/nelmio_cors.yaml`
-
-### 🔴 FAILLES CRITIQUES RESTANTES
-
-**Aucune faille critique restante!** 🎉
-
-Toutes les failles OWASP Top 10 critiques ont été adressées.
-
-### ✅ Ce qui fonctionne correctement
-
-- ✅ **Authentification complète** - Login/Register/Logout/EmailActivation/PasswordReset
-- ✅ **Email verification** - Token-based avec expiry 24h + resend option
-- ✅ **Password reset** - Flux complet avec token, expiry 1h, validation
-- ✅ **Token expiration** - Validation stricte sur activation ET reset
-- ✅ **Token hashing** - SHA256 en base de données
-- ✅ **Rate Limiting** - activate, resend, forgot, contact (3/minute)
-- ✅ **Honeypot protection** - Formulaire de contact protégé
-- ✅ **CORS** - Nelmio CORS Bundle configuré
-- ✅ **Password Hashing** - Bcrypt automatique
-- ✅ **CSRF Protection** - Configurée et validée
-- ✅ **User Checker** - Vérifie `isVerified` avant login
-- ✅ **Remember-me** - Configuré 7 jours
-- ✅ **Logout** - Session invalidée correctement
-- ✅ **DTOs** - Empêche surcharge de propriétés
-- ✅ **Doctrine ORM** - Requêtes préparées automatiquement
-- ✅ **Email Services** - Activation + Reset password services
-
----
-
-## Entités et modèle de données
-
-### Vue d'ensemble des 15 entités
-
-```
-User (utilisateurs)
-├── Cart (paniers)
-│   └── CartItem (lignes panier)
-├── Order (commandes)
-│   ├── OrderItem (lignes commande)
-│   └── Payment (paiements)
-├── Address (adresses)
-├── NewsletterSubscriber (newsletter)
-│
-Product (produits)
-├── Category (catégories)
-├── ProductImage (images)
-└── InventoryMovement (stock)
-
-Coupon (réductions)
-ContactMessage (messages)
-Slide (carousel)
-```
-
-### Entités détaillées
-
-#### **User**
-```php
-id: int (PK)
-email: string (UNIQUE)
-username: string (UNIQUE)
-firstName: string
-lastName: string
-password: string (Bcrypt)
-roles: array ['ROLE_USER']
-isVerified: bool
-activationToken: ?string
-activationExpiresAt: ?DateTimeImmutable (24h)
-resetPasswordToken: ?string
-resetPasswordExpiresAt: ?DateTimeImmutable
-lastLoginAt: ?DateTimeImmutable (UpdatedByLoginSuccessListener)
-createdAt: DateTimeImmutable
-updatedAt: DateTimeImmutable
-
-Relations:
-- carts: OneToMany<Cart>
-- orders: OneToMany<Order>
-- addresses: OneToMany<Address>
-```
-
-#### **Product**
-```php
-id: int (PK)
-sku: string (UNIQUE)
-slug: string (UNIQUE)
-name: string
-description: ?string
-price: float
-stockQuantity: int
-inStock: bool (drapeau cache)
-featured: bool
-attributes: array (JSON)
-category_id: int (FK)
-
-Relations:
-- category: ManyToOne<Category>
-- images: OneToMany<ProductImage>
-```
-
-#### **Order**
-```php
-id: int (PK)
-orderNumber: string (UNIQUE) "CMD-2026050201234"
-status: OrderStatus (PENDING, PAID, SHIPPED, DELIVERED, CANCELLED, REFUNDED)
-subtotal: float
-shipping: float
-tax: float
-total: float
-shippingAddressSnapshot: array (JSON)
-owner_id: int (FK)
-
-Relations:
-- owner: ManyToOne<User>
-- items: OneToMany<OrderItem>
-- payment: OneToOne<Payment>
-```
-
-#### **Cart & CartItem**
-```php
-// Cart
-id: int
-status: CartStatus (ACTIVE, ABANDONED, CONVERTED)
-owner_id: int (FK)
-
-Relations:
-- owner: OneToOne<User>
-- items: OneToMany<CartItem>
-
-// CartItem
-id: int
-quantity: int
-unitPrice: float
-```
-
-#### **Payment**
-```php
-id: int
-provider: string ("stripe", "paypal")
-providerPaymentId: string (UNIQUE)
-status: PaymentStatus (PENDING, SUCCEEDED, FAILED, REFUNDED)
-amount: float
-paidAt: ?DateTimeImmutable
-metadata: array (JSON)
-rawResponse: ?text (JSON)
-```
-
-#### **Address**
-```php
-id: int
-fullName: string
-phone: string
-line1: string
-line2: ?string
-city: string
-postalCode: string
-isDefaultShipping: bool
-isDefaultBilling: bool
-```
-
-#### **Coupon**
-```php
-code: string (UNIQUE) "SUMMER2026"
-type: string "percentage" | "fixed"
-value: float
-usageLimit: ?int
-usedCount: int
-startsAt: ?DateTimeImmutable
-expiresAt: ?DateTimeImmutable
-active: bool
-conditions: array (JSON)
-```
-
-#### Autres entités
-- **Category**: name, slug, parentId (hiérarchie)
-- **ProductImage**: url, alt, position, mimeType
-- **InventoryMovement**: change, reason, reference
-- **ContactMessage**: email, name, topic (enum), message
-- **NewsletterSubscriber**: email (UNIQUE)
-- **Slide**: image, title, description, link, cta
-
----
-
-## Contrôleurs et endpoints
-
-### 1. SecurityController (Authentification) ✅
-
+#### **SecurityController** - Authentification complète
 ```
 GET/POST  /login                    → app_login
-GET/POST  /register                 → app_register
+          Form: email + password + remember_me | Rate limit: 5/minute
+          
 POST      /logout                   → app_logout
-GET       /activate/{token}         → app_activate_account (avec validation expiry)
+          Firewall-intercepted
+          
+GET/POST  /register                 → app_register
+          Form: RegistrationFormType | Creates User + 24h token
+          
+GET       /activate/{token}         → app_activate_account
+          SHA256 token check + expiry validation
+          
 GET/POST  /resend-activation        → app_resend_activation
+          Regenerates token | Rate limit: 3/15 min
+          
 GET/POST  /forgot-password          → app_forgot_password
-GET/POST  /reset-password/{token}   → app_reset_password (avec validation expiry)
+          1h reset token | Rate limit: 3/15 min
+          
+GET/POST  /reset-password/{token}   → app_reset_password
+          Token validation + password hash
 ```
 
-**Tous les endpoints d'authentification sont implémentés et fonctionnels ✅**
-
-### 2. HomeController
-
+#### **AccountController** - User profil (ROLE_USER)
 ```
-GET  /           → app_home (3 slides du carousel)
-```
-
-### 3. InformationsController
-
-```
-GET  /informations/legal, cgu, cgv, privacy, returns, delivery, contact
+GET  /account/                → app_account_my
+GET  /account/orders          → app_account_orders
+GET  /account/addresses       → app_account_addresses
+GET  /account/payment         → app_account_payments
+GET/POST /account/info        → app_account_info (3 forms: name/pass/email)
 ```
 
-### 4. NewsletterController
-
+#### **HomeController** - Homepage
 ```
-POST /newsletter/subscribe
-```
-
-### 5. AccountController (requires ROLE_USER)
-
-```
-GET  /account/
-GET  /account/orders
-GET  /account/addresses
-GET  /account/payment
-GET/POST /account/info
+GET  /                        → app_home (carousel slides)
 ```
 
-### ENDPOINTS MANQUANTS ❌
+#### **InformationsController** - Pages + Contact
+```
+GET  /informations/legal|cgu|cgv|privacy|returns|delivery
+GET/POST /informations/contact → Contact form + honeypot + rate limit 3/min
+```
+
+#### **NewsletterController** - Newsletter
+```
+POST /newsletter/subscribe    → Email subscription
+```
+
+### ❌ CONTROLLERS MANQUANTS
 
 ```
-ProductController:
-  GET /products
-  GET /products/{slug}
-  GET /api/products
-
-CartController:
-  GET /cart
-  POST /api/cart/add
-  POST /api/cart/remove/{id}
-  GET /api/cart
-
-CheckoutController:
-  GET /checkout
-  POST /checkout
-
-OrderController:
-  GET /orders
-  GET /orders/{id}
-
-PaymentController (Stripe/PayPal):
-  POST /api/payment/create-intent
-  POST /api/payment/webhook
-
-AdminController:
-  GET /admin
-  GET /admin/products
-  GET /admin/orders
+ProductController:           ❌ 0% (listing, detail, filters)
+CartController:              ❌ 20% (view, add, remove, API)
+CheckoutController:          ❌ 0% (form, process order)
+OrderController:             ❌ 0% (list, detail)
+PaymentController:           ❌ 0% (Stripe/PayPal integration)
+AdminController:             ❌ 0% (dashboard, management)
 ```
 
 ---
 
 ## Services et logique métier
 
-### Services existants
+### ✅ 3 Services existants
 
-#### **AssemblerDTOService**
+**AssemblerDTOService** - DTO → Entity conversion
 ```php
-fromRegistrationDTO(RegistrationDTO): User
-updatePasswordFromDTO(User, ResetPasswordDTO): User
+fromRegistrationDTO(DTO, plainToken): User
+  - Create User, hash password, set activation token (SHA256, 24h)
+updatePasswordFromDTO(User, DTO): User
+  - Hash password, update timestamp
 ```
 
-#### **ActivationEmailService**
+**ActivationEmailService** - Email verification
 ```php
-sendActivationEmail(User): void
+sendActivationEmail(User, rawToken, isRegistration): void
+  - Template: regActivation.html.twig OR emailChangeActivation.html.twig
+  - Generate: /activate/{rawToken} URL
 ```
 
-#### **ResetPasswordEmailService**
+**ResetPasswordEmailService** - Password recovery
 ```php
-sendResetEmail(User): void
+sendResetEmail(User, rawToken): void
+  - Template: reset_password.html.twig
+  - Generate: /reset-password/{rawToken} URL
 ```
 
-### Services manquants (À créer)
+### ❌ Services manquants
 
-```php
-CartService
-- addProductToCart(User, Product, int quantity)
-- removeProductFromCart(User, CartItem)
-- convertCartToOrder(Cart): Order
-
-OrderService
-- createOrderFromCart(User, Cart, Address): Order
-- generateOrderNumber(): string
-- updateOrderStatus(Order, OrderStatus)
-- sendOrderConfirmationEmail(Order)
-
-PaymentService (Stripe/PayPal)
-- createPaymentIntent(Order, User)
-- confirmPayment(string paymentId)
-- handleWebhook(Request)
-
-ProductService
-- searchProducts(string query): Collection
-- filterByCategory(Category): Collection
-- getPopularProducts(int limit)
 ```
+ProductService:     (search, filter, related)
+CartService:        (add, remove, convert to order)
+OrderService:       (create, update status, notify)
+PaymentService:     (Stripe/PayPal integration)
+InventoryService:   (stock management)
+```
+
+---
+
+## Entités et modèle de données
+
+### 15 ENTITIES DEFINED
+
+**User** (Auth + Profile)
+```
+id, email✓, username, firstName, lastName, password, roles, 
+isVerified, activationToken✓, activationExpiresAt,
+resetPasswordToken✓, resetPasswordExpiresAt,
+emailChangeToken✓, emailChangeExpiresAt (new),
+createdAt, updatedAt, lastLoginAt (LoginSuccessListener)
+Relations: carts, orders, addresses
+```
+
+**Product** (E-commerce)
+```
+id, sku✓, slug✓, name✓, description, price (cents), stockQuantity,
+inStock (cache flag), featured, attributes (JSON),
+createdAt, updatedAt, category_id
+Relations: category, images, inventoryMovements
+```
+
+**Category** (Hierarchy)
+```
+id, name✓, slug, description, parentId (optional),
+createdAt, updatedAt
+```
+
+**Order** (Main)
+```
+id, orderNumber✓, status (enum), subtotal, shipping, tax, total,
+shippingAddressSnapshot (JSON), billingAddressSnapshot (JSON),
+owner_id, createdAt, updatedAt
+Relations: owner (User), items, payment
+```
+
+**Cart** (Shopping)
+```
+id, status (enum: ACTIVE|ABANDONED|CONVERTED),
+owner_id (OneToOne), createdAt, updatedAt
+Relations: owner (User), items (cascade remove)
+```
+
+**Payment** (Transactions)
+```
+id, provider (stripe|paypal), providerPaymentId✓,
+status, amount (cents), paidAt, metadata (JSON), rawResponse (JSON)
+```
+
+**Address** (Shipping/Billing)
+```
+id, fullName, phone, line1, line2, city, postalCode,
+isDefaultShipping, isDefaultBilling, owner_id,
+createdAt, updatedAt
+```
+
+**Plus 7 autres:** Coupon, ProductImage, OrderItem, CartItem, InventoryMovement, ContactMessage, NewsletterSubscriber, Slide
 
 ---
 
 ## Formulaires et validation
 
-### Formulaires existants
+### 8 Forms
 
-```php
-RegistrationFormType
-EmailFormType (Newsletter)
-ForgotPasswordFormType
-ResetPasswordFormType
-ContactMessageType
-NameUsernameFormType (Account)
-NewPasswordFormType (Account)
-```
-
-### Manquants
-- ProductFilterFormType
-- CheckoutFormType
+| Form | Usage | Fields |
+|------|-------|--------|
+| **RegistrationFormType** | Register | firstName, lastName, username, email, plainPassword (repeat), agreeTerms (checkbox) |
+| **EmailFormType** | Forgot/Resend | email |
+| **ResetPasswordFormType** | Reset | plainPassword |
+| **NameUsernameFormType** | Account | firstName, lastName, username |
+| **NewPasswordFormType** | Account | oldPassword, plainPassword (repeat) |
+| **NewEmailFormType** | Account | oldEmail, newEmail |
+| **ContactMessageType** | Contact | name, email, topic (choice), message, privacy (checkbox), website (honeypot) |
+| **ForgotPasswordFormType** | Forgot | email |
 
 ---
 
 ## Authentification et autorisations
 
-### Configuration security.yaml
+### Security Configuration
 
-```yaml
-password_hashers: Bcrypt auto
-provider: User entity (email)
-firewall:
-  - form_login avec CSRF
-  - remember_me 7 jours
-  - login_throttling 5/1min
-  - logout session clearing
+**Providers:** `app_user_provider` → User entity by email  
+**Firewall:** form_login + remember_me (7 days) + login_throttling (5/min)  
+**UserChecker:** Vérifie `isVerified` avant login  
 
-access_control:
-  - /admin → ROLE_ADMIN
-  - /account, /cart → ROLE_USER
+**Roles:**
+- ROLE_USER: Authenticated users
+- ROLE_ADMIN: Admin panel (not yet)
+
+**Event Listeners:**
+- **LoginSuccessListener** → Sets `lastLoginAt`
+- **GlobalThrottleListener** → global_api rate limiter (100/min)
+
+---
+
+## Rate limiting et sécurité
+
+### 5 Rate Limiters
+
+```
+contact_form:       3/minute per IP
+activation_link:    10/hour per token
+resend_activation:  3/15 minutes per IP
+forgot_password:    3/15 minutes per IP
+global_api:         100/minute per IP (future API)
 ```
 
-### UserChecker
-```php
-checkPreAuth(): Vérifie isVerified = true
+### Security Headers (Nelmio)
+
+```
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Referrer-Policy: no-referrer, strict-origin-when-cross-origin
 ```
 
-### Roles
-- ROLE_USER: Standard user
-- ROLE_ADMIN: Admin panel
+### Honeypot Protection
 
-### Event Listeners
-
-```php
-LoginSuccessListener - Met à jour lastLoginAt
-```
+Contact form has hidden `website` field. If filled → silently redirect (bot detection).
 
 ---
 
 ## Frontend et Stimulus controllers
 
-### Stimulus Controllers
+### 5 Stimulus Controllers
 
-#### **carousel_controller.js**
-- Initialise Swiper avec autoplay 6.5s
-- Supports pagination et navigation
+**carousel_controller.js** - Swiper carousel with autoplay 6.5s, pagination  
+**cart_controller.js** - Cart panel (open/close, render)  
+**csrf_protection_controller.js** - Double-submit CSRF + Turbo integration  
+**toast_controller.js** - Auto-dismiss notifications  
+**hello_controller.js** - Example (can delete)  
 
-#### **cart_controller.js**
-- Gère le panneau panier
-- Targets: panel, overlay, button, list, total
-- Uses CartManager.js
-
-#### **csrf_protection_controller.js**
-- Double-submit CSRF pattern
-- Cookie `__Host-X-CSRF-TOKEN`
-
-#### **toast_controller.js**
-- Auto-dismiss notifications (5s)
-- Animations opacity + translate
-
-### CartManager (State management)
+### CartManager.js
 
 ```javascript
-CartManager = {
+{
   items: [],
-  addItem(item),
-  removeItem(id),
-  total(),
-  dispatch() // cart:updated event
+  addItem(item), removeItem(id), clear(), total(), dispatch()
 }
+```
+
+### Importmap.php
+
+```
+'app' → './assets/app.js' (ENTRYPOINT)
+'@hotwired/stimulus' v3.2.2
+'@hotwired/turbo' v7.3.0
+'swiper' v11+
 ```
 
 ---
 
 ## Configuration
 
-### Symfony config
+### Key Config Files
 
-- **bundles.php**: FrameworkBundle, DoctrineBundle, SecurityBundle, TwigBundle, etc.
-- **services.yaml**: Autowiring activé, LoginSuccessListener enregistré
-- **framework.yaml**: Session, CSRF protection, Mailer
-- **security.yaml**: Voir authentification section
-- **doctrine.yaml**: PostgreSQL, auto-mapping App namespace
-- **rate_limiter.yaml**: contact_form 3/minute
-- **messenger.yaml**: Async email/SMS/Chat messages
-- **asset_mapper.yaml**: Assets via import map
-- **cache.yaml**: Filesystem (dev), Redis (prod)
+- **security.yaml** ✅ UserChecker, form_login, remember_me, login_throttling
+- **rate_limiter.yaml** ✅ 5 limiters
+- **nelmio_security.yaml** ✅ Headers (DENY, nosniff, referrer-policy)
+- **framework.yaml** ✅ Session, Mailer, Messenger
+- **doctrine.yaml** ✅ PostgreSQL, Migrations
+- **services.yaml** ✅ Autowiring, EventListener injection
 
-### Environment variables
+### Environment Variables
 
 ```
-DATABASE_URL
-MAILER_DSN
-MESSENGER_TRANSPORT_DSN
-REDIS_URL
-DEFAULT_URI
-```
-
-**À ajouter:**
-```
-STRIPE_PUBLIC_KEY
-STRIPE_SECRET_KEY
-PAYPAL_CLIENT_ID
-PAYPAL_SECRET
+DATABASE_URL, MAILER_DSN, MESSENGER_TRANSPORT_DSN, REDIS_URL, DEFAULT_URI
+(TODO: STRIPE_PUBLIC_KEY, STRIPE_SECRET_KEY, PAYPAL_CLIENT_ID, PAYPAL_SECRET)
 ```
 
 ---
 
 ## Base de données
 
-### Migrations appliquées (7)
+### 16 Tables
+
+user, product, category, product_image, cart, cart_item, address, order, order_item, payment, coupon, inventory_movement, contact_message, newsletter_subscriber, slide, messenger_messages
+
+### 7 Migrations
 
 ```
-20260423101317 - Schema initial
-20260424092333 - Newsletter subscriber
-20260426165108 - Carousel slides
-20260429130342 - Contact messages
-20260430135625 - Email activation (token + expires)
-20260430155908 - Password reset (token + expires)
-20260501175322 - Username unique
+v1: Initial schema | v2: Newsletter | v3: Slide | v4: ContactMessage
+v5: Activation tokens | v6: Reset tokens | v7: Username unique
 ```
 
-### Indexes existants
+### Indexes
 
-- User::email (UNIQUE)
-- User::username (UNIQUE)
-- Product::sku (UNIQUE)
-- Product::slug (UNIQUE)
-- Coupon::code (UNIQUE)
-- Order::orderNumber (UNIQUE)
-
-### Indexes à ajouter
-
-```sql
-CREATE INDEX idx_product_category ON product(category_id);
-CREATE INDEX idx_cartitem_cart ON cart_item(cart_id);
-CREATE INDEX idx_order_user ON "order"(owner_id);
-CREATE INDEX idx_order_status ON "order"(status);
-CREATE INDEX idx_order_created ON "order"(created_at DESC);
-```
+**Existing:** user.email, user.username, product.sku, product.slug, coupon.code, order.orderNumber  
+**To add:** cartitem.cart_id, order.user_id, order.status, order.created_at, product.category_id
 
 ---
 
 ## Axes d'amélioration
 
-### � PRIORITÉ 1 - Sécurité avancée & audit (optionnel, 1 semaine)
+### PRIORITÉ 1 - Tests (2-3 semaines)
+- Unit tests (Services, DTOs, Enums)
+- Functional tests (Controllers, Forms)
+- Security tests (CSRF, rate limiting, tokens)
+- **Target:** 70%+ coverage
 
-**Les failles critiques sont résolues ✅**
+### PRIORITÉ 2 - Core e-commerce (3-4 semaines)
+- ProductController (listing, detail, filters)
+- CartController (view, add, remove, API)
+- CheckoutController (form, process)
+- OrderController (list, detail)
+- Inventory management
 
-Améliorations optionnelles en sécurité:
+### PRIORITÉ 3 - Paiement (2 semaines)
+- Stripe integration
+- PaymentController (intent, confirm, webhook)
+- Refund handling
 
-1. **Ajouter logging d'audit sur actions sensibles**
-   - Tentatives login échouées (nombre total par user)
-   - Changements de password
-   - Tentatives d'activation/reset
-   - Accès admin (futur)
-   - Actions sensibles (email change, etc.)
+### PRIORITÉ 4 - Admin & Monitoring (2-3 semaines)
+- EasyAdmin 3 panel
+- Sentry + audit logging
+- Email notifications (order, shipping)
 
-2. **Ajouter 2FA optionnel (TOTP)**
-   - Google Authenticator compatible
-   - QR code generation
-   - Backup codes
+### PRIORITÉ 5 - Performance (2 semaines)
+- Redis caching
+- Database indexes
+- Query optimization
+- Frontend optimization (CSS/JS minification, images)
 
-3. **Ajouter headers de sécurité avancés**
-   - CSP (Content-Security-Policy) stricte
-   - HSTS avec preload
-   - Referrer-Policy
-   - Permissions-Policy (ex: camera, microphone)
-
-4. **Session security hardening**
-   - Session fingerprinting (IP, User-Agent)
-   - Max session par utilisateur
-   - Invalidation session au changement password
-
-5. **Monitoring de sécurité**
-   - Sentry intégration pour les erreurs
-   - Détection anomalies (tentatives anormales)
-   - Alertes sur brute force
-
-### 🟡 PRIORITÉ 2 - Core e-commerce (3-4 semaines)
-
-1. **ProductController complet**
-   - GET /products (listing paginé, filtres)
-   - GET /products/{slug} (détail)
-   - GET /api/products (REST JSON)
-
-2. **CartController complet**
-   - GET /cart, POST /api/cart/add, remove
-
-3. **CheckoutController**
-   - Validation adresse
-   - Application coupons
-   - Création commande
-
-4. **Intégration paiement** (Stripe/PayPal)
-   - Payment intent creation
-   - Webhook handling
-   - Refund management
-
-5. **Email notifications**
-   - Order confirmation
-   - Shipping updates
-   - Cart abandonment reminders
-
-### 🟢 PRIORITÉ 3 - Tests et qualité (2-3 semaines)
-
-1. **Tests unitaires** (70%+ coverage)
-2. **Tests fonctionnels** (Controllers, API)
-3. **Tests de sécurité** (CSRF, rate limiting, tokens)
-
-### 🔵 PRIORITÉ 4 - Admin & monitoring (1-2 semaines)
-
-1. **Admin panel avec EasyAdmin 3**
-   - Gestion produits/catégories
-   - Gestion commandes
-   - Reports/analytics
-
-2. **Logs structurés & audit trail**
-   - Sentry pour erreurs prod
-   - ELK pour centralisation
-
-3. **Monitoring**
-   - APM (New Relic, DataDog)
-   - Alertes critiques
-
-### 📊 PRIORITÉ 5 - Performance (2 semaines)
-
-1. **Caching** (Redis)
-   - Sessions
-   - Products (24h TTL)
-   - Categories
-
-2. **Database optimization**
-   - Missing indexes
-   - Query optimization
-   - Lazy loading
-
-3. **Frontend optimization**
-   - CSS/JS minification
-   - Image compression
-   - Service worker (PWA)
-
-### 🚀 PRIORITÉ 6 - DevOps & déploiement (2-3 semaines)
-
-1. **CI/CD pipeline** (GitHub Actions)
-   - Tests automatisés
-   - Linting (PHPStan, PHPCS)
-   - Security scanning
-   - Auto-deploy
-
-2. **Infrastructure**
-   - Kubernetes/Docker Swarm
-   - Load balancing
-   - Auto-scaling
-
-3. **Database**
-   - Backup automatisé
-   - Replica/Failover
-   - Connection pooling
-
-4. **SSL/TLS**
-   - Let's Encrypt
-   - Auto-renewal
-   - HTTP/2
+### PRIORITÉ 6 - DevOps (2-3 semaines)
+- CI/CD pipeline (GitHub Actions)
+- Monitoring + alerting
+- Backup + disaster recovery
 
 ---
 
 ## Checklist avant production
 
-### Sécurité ✅ COMPLÈTE
-- [x] Password reset fonctionnel ✅
-- [x] Tokens validés avec expiration ✅
-- [x] Rate limiting sur `/activate`, `/resend`, `/forgot`, `/contact` ✅
-- [x] Honeypot validé côté backend ✅
-- [x] Tokens hashés en base de données ✅
-- [x] CORS configuré (Nelmio) ✅
-- [ ] Headers de sécurité avancés (optionnel)
-- [ ] 2FA/TOTP (optionnel)
-- [ ] Logging d'audit (optionnel)
-- [ ] Session fingerprinting (optionnel)
-- [ ] HTTPS/TLS obligatoire (Déploiement)
-- [ ] Pas de données sensibles en logs (À vérifier)
-- [ ] Security scanning (composer audit)
+### Sécurité ✅
+- [x] Authentication complete ✅
+- [x] Email verification ✅
+- [x] Password reset ✅
+- [x] CSRF protection ✅
+- [x] Rate limiting ✅
+- [x] Honeypot ✅
+- [x] Security headers ✅
+- [x] Tokens hashed (SHA256) ✅
+- [ ] Session invalidation on password change
+- [ ] Audit logging
+- [ ] 2FA optional
+- [ ] HTTPS/TLS (deployment)
 
 ### Fonctionnalités
-- [x] Authentification 100% fonctionnelle ✅
-- [x] Register avec email verification ✅
-- [x] Login/Logout avec session ✅
-- [x] Password reset complet ✅
-- [ ] Produits listables et détail (À FAIRE)
-- [ ] Panier ajouter/retirer/checkout (À FAIRE)
-- [ ] Paiement intégré et testé (À FAIRE)
-- [ ] Commandes créables et visualisables (À FAIRE)
-- [ ] Admin panel de base (À FAIRE)
-- [ ] Email notifications (À FAIRE)
-- [ ] Gestion d'erreurs globale (À FAIRE)
+- [x] Authentication 100% ✅
+- [x] User profile 100% ✅
+- [x] Newsletter 100% ✅
+- [x] Contact form 100% ✅
+- [ ] Products (À FAIRE)
+- [ ] Cart (À FAIRE)
+- [ ] Checkout (À FAIRE)
+- [ ] Payment (À FAIRE)
+- [ ] Orders (À FAIRE)
+- [ ] Admin (À FAIRE)
 
 ### Tests
-- [ ] Coverage > 70%
-- [ ] Tests unitaires pour services clés
-- [ ] Tests fonctionnels pour controllers
-- [ ] Tests de sécurité
-- [ ] Tests paiement en sandbox
-- [ ] Tests d'email en staging
+- [ ] Unit tests 70%+
+- [ ] Functional tests
+- [ ] Security tests
+- [ ] API tests
 
 ### Performance
-- [ ] Queries N+1 éliminées
-- [ ] Indexes en place
-- [ ] Caching configuré
-- [ ] Assets minifiés
-- [ ] Images optimisées
-- [ ] TTL HTTP configurés
+- [ ] Indexes optimized
+- [ ] N+1 queries fixed
+- [ ] Caching configured
+- [ ] Assets minified
+- [ ] Images optimized
 
 ### DevOps
-- [ ] CI/CD pipeline en place
-- [ ] Docker et docker-compose finalisés
-- [ ] Secrets via env vars (pas en git!)
-- [ ] Logging centralisé
-- [ ] Monitoring et alertes
-- [ ] Backup automatisé
-- [ ] Disaster recovery plan
-
-### Documentation
-- [ ] README.md avec setup
-- [ ] API documentation
-- [ ] Architecture overview
-- [ ] Database schema diagram
-- [ ] Deployment guide
-- [ ] Troubleshooting
+- [ ] CI/CD pipeline
+- [ ] Monitoring/alerting
+- [ ] Backup automated
+- [ ] SSL/TLS certificates
 
 ---
 
-## Comment démarrer
-
-### Installation locale
-
-```bash
-# 1. Clone repo
-git clone <repo-url> && cd maison-kalyste
-
-# 2. Install PHP dependencies
-composer install
-
-# 3. Setup environment
-cp .env.example .env
-# Edit DATABASE_URL, MAILER_DSN, etc.
-
-# 4. Database setup
-docker-compose up -d
-php bin/console doctrine:migrations:migrate
-php bin/console doctrine:fixtures:load
-
-# 5. Assets
-php bin/console importmap:install
-
-# 6. Run server
-symfony serve
-
-# 7. Access app
-# HTTP: http://localhost:8000
-# Mailpit UI: http://localhost:8025
-```
-
-### Commandes utiles
-
-```bash
-# Symfony
-symfony serve --no-tls
-php bin/console cache:clear
-
-# Database
-php bin/console doctrine:migrations:migrate
-php bin/console doctrine:fixtures:load
-
-# Tests
-php bin/phpunit
-
-# Code quality
-php bin/phpstan analyse src/
-```
-
----
-
-**Mis à jour:** 2 mai 2026  
-**État:** Audit complet réalisé  
-**Prochaine révision:** Après implémentation Priorités 1-3
+**Mis à jour:** 3 mai 2026  
+**État:** Audit complet, 75% du projet  
+**Prochaine étape:** PRIORITÉ 1 (Tests), puis ProductController

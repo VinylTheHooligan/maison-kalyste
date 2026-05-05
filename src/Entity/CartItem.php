@@ -26,6 +26,15 @@ class CartItem
     #[ORM\JoinColumn(nullable: false)]
     private ?Cart $cart = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Product $product = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -39,7 +48,6 @@ class CartItem
     public function setQuantity(int $quantity): static
     {
         $this->quantity = $quantity;
-
         return $this;
     }
 
@@ -51,7 +59,6 @@ class CartItem
     public function setUnitPrice(int $unitPrice): static
     {
         $this->unitPrice = $unitPrice;
-
         return $this;
     }
 
@@ -63,7 +70,6 @@ class CartItem
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -75,7 +81,17 @@ class CartItem
     public function setCart(?Cart $cart): static
     {
         $this->cart = $cart;
+        return $this;
+    }
 
+    public function getProduct(): ?Product
+    {
+        return $this->product;
+    }
+
+    public function setProduct(?Product $product): static
+    {
+        $this->product = $product;
         return $this;
     }
 }

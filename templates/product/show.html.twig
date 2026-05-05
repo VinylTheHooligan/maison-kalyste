@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ product.name }}{% endblock %}
+
+{% block body %}
+<div class="flex justify-center">
+    <div class="flex flex-col gap-12 w-220 my-6 p-6 px-10 bg-(--third-color)">
+
+        {# Fil d'Ariane #}
+        <nav class="text-sm opacity-60 flex gap-2 items-center">
+            <a href="{{ path('app_home') }}" class="hover:underline">Accueil</a>
+            <span>/</span>
+            <a href="{{ path('app_product_index') }}" class="hover:underline">Catalogue</a>
+            <span>/</span>
+            <a href="{{ path('app_product_index', { categorie: product.category.id }) }}"
+               class="hover:underline">
+                {{ product.category.name }}
+            </a>
+            <span>/</span>
+            <span class="font-medium opacity-100">{{ product.name }}</span>
+        </nav>
+
+        {# Produit principal #}
+        <div class="flex flex-col md:flex-row gap-10">
+
+            {# Image #}
+            <div class="w-full md:w-1/2 h-96 bg-(--third-color) flex items-center justify-center">
+                <span class="text-6xl opacity-30">🧵</span>
+            </div>
+
+            {# Détails #}
+            <div class="flex flex-col gap-6 md:w-1/2">
+
+                <div>
+                    <span class="text-xs uppercase tracking-widest opacity-60">
+                        {{ product.category.name }}
+                    </span>
+                    <h1 class="text-3xl font-black mt-1">{{ product.name }}</h1>
+                </div>
+
+                <span class="text-2xl font-bold">
+                    {{ (product.price / 100)|number_format(2, ',', ' ') }} €
+                </span>
+
+                <hr class="border-(--primary-color) opacity-30">
+
+                <p class="text-sm leading-relaxed opacity-80">
+                    {{ product.description }}
+                </p>
+
+                <hr class="border-(--primary-color) opacity-30">
+
+                {# Stock #}
+                {% if product.inStock %}
+                    {% if product.stockQuantity <= 3 %}
+                        <p class="text-sm text-red-600 font-medium">
+                            ⚠ Plus que {{ product.stockQuantity }} en stock
+                        </p>
+                    {% else %}
+                        <p class="text-sm text-green-700 font-medium">✓ En stock</p>
+                    {% endif %}
+                {% else %}
+                    <p class="text-sm text-red-600 font-medium">✕ Rupture de stock</p>
+                {% endif %}
+
+                {# Bouton panier #}
+                {% if product.inStock %}
+                <button
+                    type="button"
+                    data-controller="cart"
+                    data-action="click->cart#addItem"
+                    data-product-id="{{ product.id }}"
+                    class="form-button">
+                    Ajouter au panier
+                </button>
+                {% else %}
+                <button disabled
+                    class="w-full py-3 bg-gray-300 text-gray-500 font-bold uppercase tracking-widest cursor-not-allowed">
+                    Indisponible
+                </button>
+                {% endif %}
+
+                {# SKU #}
+                <p class="text-xs opacity-40">Référence : {{ product.sku }}</p>
+            </div>
+        </div>
+
+        {# Produits similaires #}
+        {% if related is not empty %}
+        <div class="flex flex-col gap-6">
+            <h2 class="text-2xl font-black">Vous aimerez aussi</h2>
+            <hr class="border-(--primary-color) opacity-30">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {% for item in related %}
+                <a href="{{ path('app_product_show', { slug: item.slug }) }}"
+                   class="flex flex-col bg-(--third-color) hover:shadow-lg transition group">
+                    <div class="w-full h-48 bg-(--secondary-color) flex items-center justify-center">
+                        <span class="text-3xl opacity-30">🧵</span>
+                    </div>
+                    <div class="p-4 flex flex-col gap-1">
+                        <h3 class="font-black text-sm group-hover:underline">{{ item.name }}</h3>
+                        <span class="font-bold">
+                            {{ (item.price / 100)|number_format(2, ',', ' ') }} €
+                        </span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

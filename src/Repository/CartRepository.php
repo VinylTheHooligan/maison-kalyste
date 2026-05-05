@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Cart;
+use App\Entity\User;
+use App\Enum\CartStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

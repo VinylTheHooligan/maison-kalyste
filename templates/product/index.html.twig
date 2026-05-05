@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - Catalogue{% endblock %}
+
+{% block body %}
+<div class="flex justify-center">
+    <div class="flex flex-col gap-10 w-220 my-6 p-6 px-10 bg-(--secondary-color)">
+
+        {# En-tête #}
+        <div class="text-center">
+            <h2 class="text-3xl font-black mb-2">Notre Catalogue</h2>
+            <p class="text-center">Créations artisanales et pièces aux influences méditerranéennes</p>
+        </div>
+
+        {# Filtres + Recherche #}
+        <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+
+            {# Catégories #}
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ path('app_product_index') }}"
+                   class="px-4 py-1.5 border text-sm font-medium transition
+                          {{ currentCategory is null and searchQuery is null
+                             ? 'bg-(--primary-color) text-white border-(--primary-color)'
+                             : 'border-(--primary-color) hover:bg-(--primary-color) hover:text-white' }}">
+                    Tout
+                </a>
+                {% for category in categories %}
+                <a href="{{ path('app_product_index', { categorie: category.id }) }}"
+                   class="px-4 py-1.5 border text-sm font-medium transition
+                          {{ currentCategory == category.id
+                             ? 'bg-(--primary-color) text-white border-(--primary-color)'
+                             : 'border-(--primary-color) hover:bg-(--primary-color) hover:text-white' }}">
+                    {{ category.name }}
+                </a>
+                {% endfor %}
+            </div>
+
+            {# Recherche #}
+            <form method="GET" action="{{ path('app_product_index') }}" class="flex gap-2">
+                <input type="text" name="q" value="{{ searchQuery ?? '' }}"
+                       placeholder="Rechercher..."
+                       class="border border-(--primary-color) bg-(--third-color) px-4 py-1.5 text-sm focus:outline-none w-52">
+                <button type="submit"
+                        class="px-4 py-1.5 bg-(--primary-color) text-white text-sm font-medium hover:opacity-90 transition">
+                    Rechercher
+                </button>
+                {% if searchQuery %}
+                <a href="{{ path('app_product_index') }}"
+                   class="px-4 py-1.5 border border-(--primary-color) text-sm hover:bg-(--primary-color) hover:text-white transition">
+                    ✕
+                </a>
+                {% endif %}
+            </form>
+        </div>
+
+        {# Résultats #}
+        {% if products is empty %}
+            <div class="text-center py-20 bg-(--third-color)">
+                <p class="text-lg font-medium mb-2">Aucun produit trouvé.</p>
+                <a href="{{ path('app_product_index') }}" class="text-sm underline">
+                    Voir tout le catalogue
+                </a>
+            </div>
+        {% else %}
+            <p class="text-sm text-gray-500">{{ products|length }} produit{{ products|length > 1 ? 's' : '' }}</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for product in products %}
+                <a href="{{ path('app_product_show', { slug: product.slug }) }}"
+                   class="flex flex-col bg-(--third-color) hover:shadow-lg transition group">
+
+                    {# Image placeholder #}
+                    <div class="w-full h-64 bg-(--third-color)/50 flex items-center justify-center overflow-hidden">
+                        <span class="text-4xl opacity-30">🧵</span>
+                    </div>
+
+                    {# Infos produit #}
+                    <div class="p-4 flex flex-col gap-2">
+                        <span class="text-xs uppercase tracking-widest opacity-60">
+                            {{ product.category.name }}
+                        </span>
+                        <h3 class="font-black text-base group-hover:underline">
+                            {{ product.name }}
+                        </h3>
+                        <p class="text-sm opacity-70 line-clamp-2">
+                            {{ product.description }}
+                        </p>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="font-bold text-lg">
+                                {{ (product.price / 100)|number_format(2, ',', ' ') }} €
+                            </span>
+                            {% if product.stockQuantity <= 3 %}
+                            <span class="text-xs text-red-600 font-medium">
+                                Plus que {{ product.stockQuantity }} en stock
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
