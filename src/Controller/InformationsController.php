@@ -67,6 +67,7 @@ final class InformationsController extends AbstractController
     public function contact(Request $request, EntityManagerInterface $em, RateLimiterFactory $contactFormLimiter): Response
     {
         $limiter = $contactFormLimiter->create($request->getClientIp());
+        
         if (!$limiter->consume(1)->isAccepted())
         {
             throw new TooManyRequestsHttpException(null, 'Trop de tentatives, réessayez plus tard.');

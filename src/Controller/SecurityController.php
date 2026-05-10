@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
@@ -155,22 +156,16 @@ class SecurityController extends AbstractController
         {
             $limit = $resend_activation->create($request->getClientIp());
 
-            if (false === $limit->consume(1)->isAccepted()) {
-                $this->addFlash('danger', "Trop de demandes. Réessayez plus tard.");
-                return $this->redirectToRoute('app_resend_activation');
+            if (!$limit->consume(1)->isAccepted()) {
+                throw new TooManyRequestsHttpException(null, 'Trop de tentatives, réessayez plus tard.');
             }
 
             $user = $userRepository->findOneBy(['email' => $dto->email]);
-
-            if (!$user)
+            
+            if (!$user || $user->isVerified())
             {
-                $this->addFlash('danger', 'Aucun compte trouvé avec cet email.');
-                return $this->redirectToRoute('app_resend_activation');
-            }
-
-            if ($user->isVerified())
-            {
-                $this->addFlash('info', 'Ce compte est déjà activé.');
+                // to avoid revealing sensitive information to a potential attacker
+                $this->addFlash('success', "Si le compte existe, un email d'activation a été envoyé.");
                 return $this->redirectToRoute('app_login');
             }
 
@@ -184,7 +179,7 @@ class SecurityController extends AbstractController
 
             $activationEmailService->sendActivationEmail($user, $token, true);
 
-            $this->addFlash('success', "Un nouvel email d'activation vous a été envoyé.");
+            $this->addFlash('success', "Si le compte existe, un email d'activation a été envoyé.");
             return $this->redirectToRoute('app_login');
         }
 

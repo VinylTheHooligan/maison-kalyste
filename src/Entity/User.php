@@ -33,7 +33,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     #[Assert\NotBlank(groups: ['registration'])]
-    #[Assert\Length(min: 8, groups: ['registration'])]
+    #[Assert\Length(min: 12, groups: ['registration'])]
     private ?string $plainPassword = null;
 
     /**

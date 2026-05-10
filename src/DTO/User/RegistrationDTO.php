@@ -22,7 +22,7 @@ class RegistrationDTO
     #[Assert\Length(min: 2, max: 100)]
     public ?string $username = null;
 
-    #[Assert\Length(min: 8)]
+    #[Assert\Length(min: 12)]
     public ?string $plainPassword = null;
 
     public bool $agreeTerms = false;

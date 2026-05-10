@@ -145,5 +145,3 @@ input[type=checkbox] {
 .account-btn-active {
     @apply font-bold;
 }
-
-.hidden { display:none; }

@@ -10,6 +10,6 @@ class ChangePasswordDTO
     public string $oldPassword = '';
 
     #[Assert\NotBlank(message: 'Veuillez saisir un nouveau mot de passe.', groups: ['password_change'])]
-    #[Assert\Length(min: 8, minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.')]
+    #[Assert\Length(min: 12, minMessage: 'Le mot de passe doit contenir au moins {{ min }} caractères.')]
     public string $plainPassword = '';
 }

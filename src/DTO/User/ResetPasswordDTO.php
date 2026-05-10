@@ -7,6 +7,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ResetPasswordDTO
 {
     #[Assert\NotBlank]
-    #[Assert\Length(min: 8)]
+    #[Assert\Length(min: 12)]
     public ?string $plainPassword = null;
 }
