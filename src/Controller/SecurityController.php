@@ -67,9 +67,11 @@ class SecurityController extends AbstractController
             $dto->plainPassword = $form->get('plainPassword')->getData();
             $dto->agreeTerms = $form->get('agreeTerms')->getData();
 
+            // Generate a unique token to activate the account via email
             $token = bin2hex(random_bytes(32));
             $user = $assembler->fromRegistrationDTO($dto, $token);
 
+            // The activation link is valid for 24 hours for security reasons
             $user->setActivationExpiresAt(
                 new \DateTimeImmutable('+24 hours')
             );
@@ -83,13 +85,6 @@ class SecurityController extends AbstractController
 
             return $this->redirectToRoute('app_login');
         }
-
-        if ($form->isSubmitted() && !$form->isValid()) {
-            return $this->render('security/register.html.twig', [
-                'form' => $form->createView(),
-            ], new Response(status: 422));
-        }
-
 
         return $this->render('security/register.html.twig', [
             'form' => $form->createView(),

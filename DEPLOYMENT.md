@@ -123,7 +123,7 @@ Le site sera alors accessible sur `http://localhost:8000`.
 
 ---
 
-## 9. Travailler sur les styles
+## 8. Travailler sur les styles
 
 Le projet utilise Tailwind et la commande suivante doit être lancée pendant le développement CSS :
 
@@ -135,7 +135,7 @@ Cette commande reconstruit automatiquement les styles à chaque modification.
 
 ---
 
-## 10. Commandes utiles
+## 9. Commandes utiles
 
 ```bash
 # Vérifier la version de PHP
@@ -153,7 +153,7 @@ php bin/console assets:install --symlink
 
 ---
 
-## 11. Script de déploiement rapide
+## 10. Script de déploiement rapide
 
 ```bash
 # Script de déploiement local
@@ -167,7 +167,7 @@ symfony serve -d
 
 ---
 
-## 12. Notes importantes
+## 11. Notes importantes
 
 - Ce guide est fait pour un environnement de développement, pas pour la production.
 - Une veille régulière est effectuée sur les mises à jour de Symfony, Doctrine, PHP et Tailwind afin de garantir un déploiement sécurisé.
